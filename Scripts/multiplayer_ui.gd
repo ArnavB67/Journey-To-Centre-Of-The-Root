@@ -6,7 +6,10 @@ const WARRIOR = preload("uid://dm6l1a5i5eenu")
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	if OS.has_feature('server'):
+		HighLevelNetworkHandler.CreateServer()
+		AddLevel()
+		hide()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -15,14 +18,13 @@ func _process(delta: float) -> void:
 
 
 func _on_join_pressed() -> void:
-	var NewWarrior=WARRIOR.instantiate()
-	get_tree().current_scene.add_child(NewWarrior)
+	HighLevelNetworkHandler.CreateClient()
 	AddLevel()
 	hide()
 
 func AddLevel():
 	var Lvl1=LEVEL1.instantiate()
-	get_tree().current_scene.add_child(Lvl1)
+	get_tree().current_scene.add_child.call_deferred(Lvl1)
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()

@@ -373,7 +373,19 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4voqm"]
 size = Vector2(17, 44)
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fq4km"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("AnimatedSprite2D:animation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("AnimatedSprite2D:flip_h")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+
 [node name="Warrior" type="CharacterBody2D" unique_id=910795566]
+collision_mask = 2
 script = ExtResource("1_fq4km")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1259804910]
@@ -389,3 +401,6 @@ shape = SubResource("RectangleShape2D_4voqm")
 unique_name_in_owner = true
 zoom = Vector2(1.5, 1.5)
 position_smoothing_enabled = true
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1262543411]
+replication_config = SubResource("SceneReplicationConfig_fq4km")

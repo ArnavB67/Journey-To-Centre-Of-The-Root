@@ -5,12 +5,13 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ucf3m"]
 
 [node name="Level1" type="Node2D" unique_id=1497155670]
-metadata/_edit_vertical_guides_ = [501.0]
-metadata/_edit_horizontal_guides_ = [383.0]
+metadata/_edit_vertical_guides_ = [169.0]
+metadata/_edit_horizontal_guides_ = [332.0]
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1221355165]
 position = Vector2(10, 85)
 scale = Vector2(1.1600004, 1)
+collision_layer = 2
 
 [node name="MeshInstance2D" type="MeshInstance2D" parent="StaticBody2D" unique_id=1522817311]
 position = Vector2(493.23016, 326.16663)
