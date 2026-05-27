@@ -11,8 +11,13 @@ config_version=5
 [application]
 
 config/name="Journey To Centrer Of The Root"
+run/main_scene="uid://dpjsif7q5srei"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+HighLevelNetworkHandler="*uid://b0ifw07yar75m"
 
 [display]
 

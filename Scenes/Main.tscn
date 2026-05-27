@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://dpjsif7q5srei"]
+
+[ext_resource type="PackedScene" uid="uid://cgoxadul2uwpp" path="res://Scenes/Multiplayer/MultiplayerUI.tscn" id="1_r150o"]
+
+[node name="Main" type="Node" unique_id=1706768983]
+
+[node name="MultiplayerUi" parent="." unique_id=1588493661 instance=ExtResource("1_r150o")]
