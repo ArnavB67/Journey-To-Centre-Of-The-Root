@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dm6l1a5i5eenu"]
 
 [ext_resource type="Texture2D" uid="uid://bxgptlayy7y50" path="res://Assets/Hero Knight/Sprites/Attack1.png" id="1_3oxwj"]
+[ext_resource type="Script" uid="uid://ckp2s2wjv4gma" path="res://Scripts/warrior.gd" id="1_fq4km"]
 [ext_resource type="Texture2D" uid="uid://uark65xy1aix" path="res://Assets/Hero Knight/Sprites/Attack2.png" id="2_fq4km"]
 [ext_resource type="Texture2D" uid="uid://81o12xps0ey5" path="res://Assets/Hero Knight/Sprites/Idle.png" id="3_ckwxp"]
 [ext_resource type="Texture2D" uid="uid://dg6rk5xt5e61a" path="res://Assets/Hero Knight/Sprites/Jump.png" id="4_qeq3o"]
@@ -370,19 +371,21 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4voqm"]
-size = Vector2(59, 173)
+size = Vector2(17, 44)
 
 [node name="Warrior" type="CharacterBody2D" unique_id=910795566]
+script = ExtResource("1_fq4km")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1259804910]
-scale = Vector2(4, 4)
 sprite_frames = SubResource("SpriteFrames_erwpa")
 animation = &"Idle"
 autoplay = "Idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2113056730]
-position = Vector2(28.5, 8.5)
+position = Vector2(4.5, 2)
 shape = SubResource("RectangleShape2D_4voqm")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=546485567]
+unique_name_in_owner = true
+zoom = Vector2(1.5, 1.5)
 position_smoothing_enabled = true

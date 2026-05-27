@@ -1,6 +1,7 @@
 extends Control
 
 const LEVEL1 = preload("uid://b7fbbnbj0p6fo")
+const WARRIOR = preload("uid://dm6l1a5i5eenu")
 
 
 # Called when the node enters the scene tree for the first time.
@@ -14,10 +15,14 @@ func _process(delta: float) -> void:
 
 
 func _on_join_pressed() -> void:
-	var Lvl1=LEVEL1.instantiate()
-	get_tree().current_scene.add_child(Lvl1)
+	var NewWarrior=WARRIOR.instantiate()
+	get_tree().current_scene.add_child(NewWarrior)
+	AddLevel()
 	hide()
 
+func AddLevel():
+	var Lvl1=LEVEL1.instantiate()
+	get_tree().current_scene.add_child(Lvl1)
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()
