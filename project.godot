@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 HighLevelNetworkHandler="*uid://b0ifw07yar75m"
 TileRunInstancesGlobal="*uid://b6fg6pu2bfi14"
+Global="*uid://d3p6vcuxp0ufw"
 
 [display]
 
@@ -27,7 +28,7 @@ window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot_super-wakatime/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot_super-wakatime/plugin.cfg", "res://addons/tube/plugin.cfg")
 
 [input]
 

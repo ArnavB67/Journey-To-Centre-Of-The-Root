@@ -32,17 +32,74 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer" unique_id=630570874]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer" unique_id=433401684]
 layout_mode = 2
 
-[node name="Join" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=384213852]
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer" unique_id=630570874]
+layout_mode = 2
+
+[node name="Join" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer" unique_id=384213852]
 layout_mode = 2
 text = "Join"
 
-[node name="Quit" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=1275179872]
+[node name="Quit" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer" unique_id=1275179872]
 layout_mode = 2
 text = "Quit
 "
 
-[connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/Join" to="." method="_on_join_pressed"]
-[connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/Quit" to="." method="_on_quit_pressed"]
+[node name="WebRtc" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer" unique_id=257730918]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=1450856124]
+layout_mode = 2
+text = "Journey To Centre Of The Core"
+
+[node name="LobbyId" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=1813144032]
+layout_mode = 2
+text = "Lobby Code"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LobbyIdInput" type="LineEdit" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=480207941]
+layout_mode = 2
+
+[node name="Username" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=751635471]
+layout_mode = 2
+text = "Username"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="UsernameInput" type="LineEdit" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=625203112]
+layout_mode = 2
+
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=1537364468]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="JoinWebRtc" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=1880512852]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Join"
+
+[node name="QuitWebRtc" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=1788841739]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Quit
+"
+
+[node name="HSeparator2" type="HSeparator" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=1436980204]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="HostServer" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=965242416]
+layout_mode = 2
+text = "Host Server"
+
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/Join" to="." method="_on_join_pressed"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/Quit" to="." method="_on_quit_pressed"]
+[connection signal="text_changed" from="PanelContainer/MarginContainer/HBoxContainer/WebRtc/LobbyIdInput" to="." method="_on_lobby_id_input_text_changed"]
+[connection signal="text_changed" from="PanelContainer/MarginContainer/HBoxContainer/WebRtc/UsernameInput" to="." method="_on_username_input_text_changed"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/WebRtc/JoinWebRtc" to="." method="_on_join_web_rtc_pressed"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/WebRtc/QuitWebRtc" to="." method="_on_quit_web_rtc_pressed"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/WebRtc/HostServer" to="." method="_on_host_server_pressed"]

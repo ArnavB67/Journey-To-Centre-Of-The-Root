@@ -7,6 +7,7 @@ const JUMP_VELOCITY = -400.0
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 var Attacking=false
 @onready var attack_animation_timer: Timer = $AttackAnimationTimer
+@onready var lobby_id: Label = %LobbyId
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
@@ -17,7 +18,10 @@ func _ready() -> void:
 		set_process(false)
 		set_physics_process(false)
 	if is_multiplayer_authority():
+		if Global.Username:
+			$Username.text=Global.Username
 		camera_2d.make_current()
+		lobby_id.text="Lobby Code: "+HighLevelNetworkHandler.Tubeclient.session_id
 
 func _process(delta: float) -> void:
 	if Input.is_action_just_pressed(&"Attack1") and is_on_floor():
@@ -67,3 +71,7 @@ func _physics_process(delta: float) -> void:
 
 func _on_attack_animation_timer_timeout() -> void:
 	Attacking=false
+
+
+func _on_leave_button_pressed() -> void:
+	HighLevelNetworkHandler.LeaveServer()

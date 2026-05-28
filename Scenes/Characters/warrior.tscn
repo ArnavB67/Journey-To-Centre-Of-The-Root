@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://dg6rk5xt5e61a" path="res://Assets/Hero Knight/Sprites/Jump.png" id="4_qeq3o"]
 [ext_resource type="Texture2D" uid="uid://c3nvkxfnja5eb" path="res://Assets/Hero Knight/Sprites/Run.png" id="5_bq06q"]
 [ext_resource type="Texture2D" uid="uid://865sskptnpb6" path="res://Assets/Hero Knight/Sprites/Death.png" id="6_nn0j2"]
+[ext_resource type="FontFile" uid="uid://r15t4v2wn6yy" path="res://Assets/fonts/PixelOperator8.ttf" id="8_ckwxp"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ea8ps"]
 atlas = ExtResource("1_3oxwj")
@@ -383,6 +384,9 @@ properties/1/replication_mode = 1
 properties/2/path = NodePath("AnimatedSprite2D:flip_h")
 properties/2/spawn = true
 properties/2/replication_mode = 1
+properties/3/path = NodePath("Username:text")
+properties/3/spawn = true
+properties/3/replication_mode = 1
 
 [node name="Warrior" type="CharacterBody2D" unique_id=910795566]
 collision_mask = 2
@@ -390,7 +394,7 @@ script = ExtResource("1_fq4km")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1259804910]
 sprite_frames = SubResource("SpriteFrames_erwpa")
-animation = &"Attack2"
+animation = &"Idle"
 autoplay = "Idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2113056730]
@@ -408,4 +412,46 @@ replication_config = SubResource("SceneReplicationConfig_fq4km")
 [node name="AttackAnimationTimer" type="Timer" parent="." unique_id=1520553761]
 wait_time = 0.2
 
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=123661833]
+
+[node name="Menu" type="Control" parent="CanvasLayer" unique_id=260706169]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/Menu" unique_id=2072946496]
+layout_mode = 1
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Menu/PanelContainer" unique_id=827118463]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Menu/PanelContainer/MarginContainer" unique_id=401148384]
+layout_mode = 2
+
+[node name="LobbyId" type="Label" parent="CanvasLayer/Menu/PanelContainer/MarginContainer/VBoxContainer" unique_id=210661086]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="LeaveButton" type="Button" parent="CanvasLayer/Menu/PanelContainer/MarginContainer/VBoxContainer" unique_id=1151757291]
+layout_mode = 2
+text = "Leave"
+
+[node name="Username" type="Label" parent="." unique_id=458076531]
+offset_left = -25.0
+offset_top = -38.0
+offset_right = 38.0
+offset_bottom = -22.0
+theme_override_fonts/font = ExtResource("8_ckwxp")
+theme_override_font_sizes/font_size = 8
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [connection signal="timeout" from="AttackAnimationTimer" to="." method="_on_attack_animation_timer_timeout"]
+[connection signal="pressed" from="CanvasLayer/Menu/PanelContainer/MarginContainer/VBoxContainer/LeaveButton" to="." method="_on_leave_button_pressed"]
