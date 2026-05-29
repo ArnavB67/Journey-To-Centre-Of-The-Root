@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cgoxadul2uwpp"]
 
 [ext_resource type="Script" uid="uid://bgguno0jq05r5" path="res://Scripts/multiplayer_ui.gd" id="1_dfhhj"]
+[ext_resource type="FontFile" uid="uid://r15t4v2wn6yy" path="res://Assets/fonts/PixelOperator8.ttf" id="2_ju8l8"]
 
 [node name="MultiplayerUi" type="Control" unique_id=1588493661]
 layout_mode = 3
@@ -53,10 +54,16 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=1450856124]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_ju8l8")
 text = "Journey To Centre Of The Core"
+
+[node name="HSeparator3" type="HSeparator" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=1432786868]
+layout_mode = 2
+theme_override_constants/separation = 24
 
 [node name="LobbyId" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=1813144032]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_ju8l8")
 text = "Lobby Code"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -66,6 +73,7 @@ layout_mode = 2
 
 [node name="Username" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=751635471]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_ju8l8")
 text = "Username"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -80,11 +88,13 @@ theme_override_constants/separation = 24
 [node name="JoinWebRtc" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=1880512852]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_ju8l8")
 text = "Join"
 
 [node name="QuitWebRtc" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=1788841739]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_ju8l8")
 text = "Quit
 "
 
@@ -94,6 +104,7 @@ theme_override_constants/separation = 24
 
 [node name="HostServer" type="Button" parent="PanelContainer/MarginContainer/HBoxContainer/WebRtc" unique_id=965242416]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("2_ju8l8")
 text = "Host Server"
 
 [connection signal="pressed" from="PanelContainer/MarginContainer/HBoxContainer/VBoxContainer/Join" to="." method="_on_join_pressed"]

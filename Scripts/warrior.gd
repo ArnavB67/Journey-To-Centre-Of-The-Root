@@ -22,6 +22,7 @@ func _ready() -> void:
 	if not is_multiplayer_authority():
 		set_process(false)
 		set_physics_process(false)
+		$CanvasLayer.visible=false
 	if is_multiplayer_authority():
 		if Global.Username:
 			$Username.text=Global.Username
@@ -74,10 +75,10 @@ func _physics_process(delta: float) -> void:
 					PlayAttackAnimation.rpc(&"Run")
 				if direction==0:
 					PlayAttackAnimation.rpc(&"Idle")
-				
+
 			if direction:
 				velocity.x = direction * SPEED
-				
+
 			else:
 				velocity.x = move_toward(velocity.x, 0, SPEED)
 
@@ -108,7 +109,7 @@ func GiveDamage(DamagedPlayer,DamageAmount):
 			PlayerToDamage.Health=0
 			PlayerToDamage.Dead=true
 			PlayerToDamage.death_animation_timer.start()
-			
+
 		else:
 			PlayerToDamage.Health=NextHealth
 
@@ -123,7 +124,7 @@ func PlayerDead():
 	attack_1_collision_shape.disabled=true
 	if is_multiplayer_authority():
 		ChangeSpectator()
-	
+
 func ChangeSpectator():
 	var Players=get_tree().get_nodes_in_group("Players")
 	var AlivePlayers=[]
@@ -134,6 +135,3 @@ func ChangeSpectator():
 		CurrentSpectating=(CurrentSpectating+1)%AlivePlayers.size()
 		var SpectatePlayer=AlivePlayers[CurrentSpectating]
 		SpectatePlayer.camera_2d.make_current()
-		
-	
-	

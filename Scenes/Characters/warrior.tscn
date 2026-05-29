@@ -444,9 +444,11 @@ layout_mode = 2
 [node name="LobbyId" type="Label" parent="CanvasLayer/Menu/PanelContainer/MarginContainer/VBoxContainer" unique_id=210661086]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_fonts/font = ExtResource("8_ckwxp")
 
 [node name="LeaveButton" type="Button" parent="CanvasLayer/Menu/PanelContainer/MarginContainer/VBoxContainer" unique_id=1151757291]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("8_ckwxp")
 text = "Leave"
 
 [node name="Username" type="Label" parent="." unique_id=458076531]
@@ -465,6 +467,7 @@ offset_left = -66.0
 offset_top = -16.0
 offset_right = -13.0
 offset_bottom = 7.0
+theme_override_fonts/font = ExtResource("8_ckwxp")
 horizontal_alignment = 1
 
 [node name="Area2D" type="Area2D" parent="." unique_id=480103397]
