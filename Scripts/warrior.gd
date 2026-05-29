@@ -10,9 +10,12 @@ var Attacking=false
 @onready var attack_animation_timer: Timer = $AttackAnimationTimer
 @onready var lobby_id: Label = %LobbyId
 @onready var health_label: Label = %HealthLabel
-@onready var attack_1_collision_shape: CollisionShape2D = $Area2D/Attack1CollisionShape
+@onready var attack_1_collision_shape: CollisionShape2D = $Attack1Hitbox/Attack1CollisionShape
 @onready var death_animation_timer: Timer = $DeathAnimationTimer
 var CurrentSpectating=0
+@onready var attack_1_hitbox: Area2D = $Attack1Hitbox
+@onready var attack_2_collision_shape: CollisionShape2D = $Attack2Hitbox/Attack2CollisionShape
+@onready var attack_2_hitbox: Area2D = $Attack2Hitbox
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
@@ -73,6 +76,12 @@ func _physics_process(delta: float) -> void:
 				if direction!=0:
 					animated_sprite_2d.flip_h=direction<0
 					PlayAttackAnimation.rpc(&"Run")
+					if direction<0:
+						attack_1_hitbox.scale.x=-1
+						attack_2_hitbox.scale.x=-1
+					else:
+						attack_1_hitbox.scale.x=1
+						attack_2_hitbox.scale.x=1
 				if direction==0:
 					PlayAttackAnimation.rpc(&"Idle")
 
@@ -88,6 +97,7 @@ func _physics_process(delta: float) -> void:
 func _on_attack_animation_timer_timeout() -> void:
 	Attacking=false
 	attack_1_collision_shape.disabled=true
+	attack_2_collision_shape.disabled=true
 
 
 func _on_leave_button_pressed() -> void:
@@ -135,3 +145,4 @@ func ChangeSpectator():
 		CurrentSpectating=(CurrentSpectating+1)%AlivePlayers.size()
 		var SpectatePlayer=AlivePlayers[CurrentSpectating]
 		SpectatePlayer.camera_2d.make_current()
+		

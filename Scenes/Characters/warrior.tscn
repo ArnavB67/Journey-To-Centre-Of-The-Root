@@ -372,7 +372,7 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4voqm"]
-size = Vector2(17, 44)
+size = Vector2(33, 45)
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fq4km"]
 properties/0/path = NodePath(".:position")
@@ -394,17 +394,20 @@ properties/4/replication_mode = 1
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ckwxp"]
 size = Vector2(16, 54)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qeq3o"]
+size = Vector2(48, 60)
+
 [node name="Warrior" type="CharacterBody2D" unique_id=910795566]
 collision_mask = 2
 script = ExtResource("1_fq4km")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1259804910]
 sprite_frames = SubResource("SpriteFrames_erwpa")
-animation = &"Run"
+animation = &"Attack1"
 autoplay = "Idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2113056730]
-position = Vector2(4.5, 2)
+position = Vector2(-0.5, 1.5)
 shape = SubResource("RectangleShape2D_4voqm")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=546485567]
@@ -470,9 +473,9 @@ offset_bottom = 7.0
 theme_override_fonts/font = ExtResource("8_ckwxp")
 horizontal_alignment = 1
 
-[node name="Area2D" type="Area2D" parent="." unique_id=480103397]
+[node name="Attack1Hitbox" type="Area2D" parent="." unique_id=480103397]
 
-[node name="Attack1CollisionShape" type="CollisionShape2D" parent="Area2D" unique_id=70653582]
+[node name="Attack1CollisionShape" type="CollisionShape2D" parent="Attack1Hitbox" unique_id=70653582]
 position = Vector2(32, -4)
 shape = SubResource("RectangleShape2D_ckwxp")
 disabled = true
@@ -480,7 +483,14 @@ disabled = true
 [node name="DeathAnimationTimer" type="Timer" parent="." unique_id=546226928]
 one_shot = true
 
+[node name="Attack2Hitbox" type="Area2D" parent="." unique_id=1977916245]
+
+[node name="Attack2CollisionShape" type="CollisionShape2D" parent="Attack2Hitbox" unique_id=1880294941]
+position = Vector2(64, -6)
+shape = SubResource("RectangleShape2D_qeq3o")
+disabled = true
+
 [connection signal="timeout" from="AttackAnimationTimer" to="." method="_on_attack_animation_timer_timeout"]
 [connection signal="pressed" from="CanvasLayer/Menu/PanelContainer/MarginContainer/VBoxContainer/LeaveButton" to="." method="_on_leave_button_pressed"]
-[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_entered" from="Attack1Hitbox" to="." method="_on_area_2d_body_entered"]
 [connection signal="timeout" from="DeathAnimationTimer" to="." method="_on_death_animation_timer_timeout"]
