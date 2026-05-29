@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-
+@export var Health=100
 const SPEED = 300.0
 const JUMP_VELOCITY = -400.0
 @onready var camera_2d: Camera2D = %Camera2D
@@ -8,6 +8,8 @@ const JUMP_VELOCITY = -400.0
 var Attacking=false
 @onready var attack_animation_timer: Timer = $AttackAnimationTimer
 @onready var lobby_id: Label = %LobbyId
+@onready var health_label: Label = %HealthLabel
+@onready var attack_1_collision_shape: CollisionShape2D = $Area2D/Attack1CollisionShape
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
@@ -24,15 +26,19 @@ func _ready() -> void:
 		lobby_id.text="Lobby Code: "+HighLevelNetworkHandler.Tubeclient.session_id
 
 func _process(delta: float) -> void:
-	if Input.is_action_just_pressed(&"Attack1") and is_on_floor():
-		Attacking=true
-		attack_animation_timer.start()
-		PlayAttackAnimation.rpc(&"Attack1")
-		
-	if Input.is_action_just_pressed(&"Attack2") and is_on_floor():
-		Attacking=true
-		PlayAttackAnimation.rpc(&"Attack2")
-		attack_animation_timer.start()
+	if is_multiplayer_authority():
+		health_label.text=str(Health)
+		if Input.is_action_just_pressed(&"Attack1") and is_on_floor():
+			Attacking=true
+			attack_1_collision_shape.disabled=false
+			attack_animation_timer.start()
+			PlayAttackAnimation.rpc(&"Attack1")
+			
+		if Input.is_action_just_pressed(&"Attack2") and is_on_floor():
+			Attacking=true
+			attack_1_collision_shape.disabled=false
+			PlayAttackAnimation.rpc(&"Attack2")
+			attack_animation_timer.start()
 
 @rpc("authority","call_local","reliable")
 func PlayAttackAnimation(AnimationName):
@@ -71,7 +77,20 @@ func _physics_process(delta: float) -> void:
 
 func _on_attack_animation_timer_timeout() -> void:
 	Attacking=false
+	attack_1_collision_shape.disabled=true
 
 
 func _on_leave_button_pressed() -> void:
 	HighLevelNetworkHandler.LeaveServer()
+
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	if is_multiplayer_authority():
+		if body.is_in_group("Players"):
+			GiveDamage.rpc(body.get_path(),10)
+
+@rpc("any_peer","call_local")
+func GiveDamage(DamagedPlayer,DamageAmount):
+	var PlayerToDamage=get_node(DamagedPlayer)
+	if PlayerToDamage:
+		PlayerToDamage.Health-=DamageAmount
