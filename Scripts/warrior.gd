@@ -1,5 +1,6 @@
 extends CharacterBody2D
 
+@export var Dead=false
 @export var Health=100
 const SPEED = 300.0
 const JUMP_VELOCITY = -400.0
@@ -10,6 +11,8 @@ var Attacking=false
 @onready var lobby_id: Label = %LobbyId
 @onready var health_label: Label = %HealthLabel
 @onready var attack_1_collision_shape: CollisionShape2D = $Area2D/Attack1CollisionShape
+@onready var death_animation_timer: Timer = $DeathAnimationTimer
+var CurrentSpectating=0
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
@@ -27,14 +30,20 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if is_multiplayer_authority():
+		if Dead==true:
+			PlayAttackAnimation.rpc("Death")
+			if Input.is_action_just_pressed(&"ChangeSpectator"):
+				ChangeSpectator()
+			return
+
 		health_label.text=str(Health)
-		if Input.is_action_just_pressed(&"Attack1") and is_on_floor():
+		if Input.is_action_just_pressed(&"Attack1") and is_on_floor() and not Dead:
 			Attacking=true
 			attack_1_collision_shape.disabled=false
 			attack_animation_timer.start()
 			PlayAttackAnimation.rpc(&"Attack1")
 			
-		if Input.is_action_just_pressed(&"Attack2") and is_on_floor():
+		if Input.is_action_just_pressed(&"Attack2") and is_on_floor() and not Dead:
 			Attacking=true
 			attack_1_collision_shape.disabled=false
 			PlayAttackAnimation.rpc(&"Attack2")
@@ -46,7 +55,7 @@ func PlayAttackAnimation(AnimationName):
 	
 
 func _physics_process(delta: float) -> void:
-	if not Attacking:
+	if not Attacking and not Dead:
 			if not is_on_floor():
 				velocity += get_gravity() * delta
 
@@ -92,5 +101,39 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 @rpc("any_peer","call_local")
 func GiveDamage(DamagedPlayer,DamageAmount):
 	var PlayerToDamage=get_node(DamagedPlayer)
+
 	if PlayerToDamage:
-		PlayerToDamage.Health-=DamageAmount
+		var NextHealth=PlayerToDamage.Health-DamageAmount
+		if NextHealth<=0:
+			PlayerToDamage.Health=0
+			PlayerToDamage.Dead=true
+			PlayerToDamage.death_animation_timer.start()
+			
+		else:
+			PlayerToDamage.Health=NextHealth
+
+
+func _on_death_animation_timer_timeout() -> void:
+	if is_multiplayer_authority():
+		PlayerDead.rpc()
+
+@rpc("any_peer","call_local")
+func PlayerDead():
+	visible=false
+	attack_1_collision_shape.disabled=true
+	if is_multiplayer_authority():
+		ChangeSpectator()
+	
+func ChangeSpectator():
+	var Players=get_tree().get_nodes_in_group("Players")
+	var AlivePlayers=[]
+	for Player in Players:
+		if not Player.Dead and Player!=self:
+			AlivePlayers.append(Player)
+	if AlivePlayers.size()>0:
+		CurrentSpectating=(CurrentSpectating+1)%AlivePlayers.size()
+		var SpectatePlayer=AlivePlayers[CurrentSpectating]
+		SpectatePlayer.camera_2d.make_current()
+		
+	
+	

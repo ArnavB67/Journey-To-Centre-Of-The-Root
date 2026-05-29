@@ -400,10 +400,8 @@ script = ExtResource("1_fq4km")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1259804910]
 sprite_frames = SubResource("SpriteFrames_erwpa")
-animation = &"Attack1"
+animation = &"Run"
 autoplay = "Idle"
-frame = 6
-frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2113056730]
 position = Vector2(4.5, 2)
@@ -476,6 +474,10 @@ position = Vector2(32, -4)
 shape = SubResource("RectangleShape2D_ckwxp")
 disabled = true
 
+[node name="DeathAnimationTimer" type="Timer" parent="." unique_id=546226928]
+one_shot = true
+
 [connection signal="timeout" from="AttackAnimationTimer" to="." method="_on_attack_animation_timer_timeout"]
 [connection signal="pressed" from="CanvasLayer/Menu/PanelContainer/MarginContainer/VBoxContainer/LeaveButton" to="." method="_on_leave_button_pressed"]
 [connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="timeout" from="DeathAnimationTimer" to="." method="_on_death_animation_timer_timeout"]
