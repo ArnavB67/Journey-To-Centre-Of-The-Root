@@ -16,7 +16,10 @@ var CurrentSpectating=0
 @onready var attack_1_hitbox: Area2D = $Attack1Hitbox
 @onready var attack_2_collision_shape: CollisionShape2D = $Attack2Hitbox/Attack2CollisionShape
 @onready var attack_2_hitbox: Area2D = $Attack2Hitbox
-
+@onready var ray_cast_2d_right: RayCast2D = $InteractionRaycast/RayCast2DRight
+@onready var ray_cast_2d_left: RayCast2D = $InteractionRaycast/RayCast2DLeft
+@onready var select_menu: PanelContainer = $CanvasLayer/SelectMenu
+var CurrentPhysicsProcess=true
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
 
@@ -34,6 +37,13 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if is_multiplayer_authority():
+		if ray_cast_2d_left.is_colliding()or ray_cast_2d_right.is_colliding():
+			if Input.is_action_just_pressed(&"Interact"):
+				select_menu.visible=!select_menu.visible
+				CurrentPhysicsProcess=!CurrentPhysicsProcess
+				set_physics_process(CurrentPhysicsProcess)
+				if select_menu.visible:
+					PlayAttackAnimation("Idle")
 		if Dead==true:
 			PlayAttackAnimation.rpc("Death")
 			if Input.is_action_just_pressed(&"ChangeSpectator"):
@@ -146,3 +156,14 @@ func ChangeSpectator():
 		var SpectatePlayer=AlivePlayers[CurrentSpectating]
 		SpectatePlayer.camera_2d.make_current()
 		
+
+
+func _on_warrior_pressed() -> void:
+	if is_multiplayer_authority():
+		Global.MyCharacter="Warrior"
+		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Warrior")
+		
+func _on_button_pressed() -> void:
+	if is_multiplayer_authority():
+		Global.MyCharacter="Wizard"
+		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Wizard")

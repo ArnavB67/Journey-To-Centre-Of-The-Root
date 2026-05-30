@@ -398,7 +398,8 @@ size = Vector2(16, 54)
 size = Vector2(48, 60)
 
 [node name="Warrior" type="CharacterBody2D" unique_id=910795566]
-collision_mask = 2
+z_index = 1
+collision_mask = 6
 script = ExtResource("1_fq4km")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1259804910]
@@ -454,6 +455,45 @@ layout_mode = 2
 theme_override_fonts/font = ExtResource("8_ckwxp")
 text = "Leave"
 
+[node name="SelectMenu" type="PanelContainer" parent="CanvasLayer" unique_id=784474643]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -300.0
+offset_right = 400.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="CanvasLayer/SelectMenu" unique_id=937663839]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/SelectMenu/Panel" unique_id=1398498766]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Warrior" type="Button" parent="CanvasLayer/SelectMenu/Panel/HBoxContainer" unique_id=939656184]
+layout_mode = 2
+text = "Warrior"
+
+[node name="Button" type="Button" parent="CanvasLayer/SelectMenu/Panel/HBoxContainer" unique_id=1195415853]
+layout_mode = 2
+text = "Wizard"
+
 [node name="Username" type="Label" parent="." unique_id=458076531]
 offset_left = -25.0
 offset_top = -38.0
@@ -490,7 +530,20 @@ position = Vector2(64, -6)
 shape = SubResource("RectangleShape2D_qeq3o")
 disabled = true
 
+[node name="InteractionRaycast" type="Node2D" parent="." unique_id=102835720]
+position = Vector2(0, 13)
+
+[node name="RayCast2DRight" type="RayCast2D" parent="InteractionRaycast" unique_id=1817797561]
+target_position = Vector2(40, 0)
+collision_mask = 4
+
+[node name="RayCast2DLeft" type="RayCast2D" parent="InteractionRaycast" unique_id=1024446913]
+target_position = Vector2(-40, 0)
+collision_mask = 4
+
 [connection signal="timeout" from="AttackAnimationTimer" to="." method="_on_attack_animation_timer_timeout"]
 [connection signal="pressed" from="CanvasLayer/Menu/PanelContainer/MarginContainer/VBoxContainer/LeaveButton" to="." method="_on_leave_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/SelectMenu/Panel/HBoxContainer/Warrior" to="." method="_on_warrior_pressed"]
+[connection signal="pressed" from="CanvasLayer/SelectMenu/Panel/HBoxContainer/Button" to="." method="_on_button_pressed"]
 [connection signal="body_entered" from="Attack1Hitbox" to="." method="_on_area_2d_body_entered"]
 [connection signal="timeout" from="DeathAnimationTimer" to="." method="_on_death_animation_timer_timeout"]

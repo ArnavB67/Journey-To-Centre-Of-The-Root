@@ -7,6 +7,7 @@ const WARRIOR = preload("uid://dm6l1a5i5eenu")
 const TUBE_CONTEXT = preload("uid://clf0g5oy74te3")
 var Tubeclient:=TubeClient.new()
 var TubeEnabled=true
+const WIZARD = preload("uid://ls1hryxa11nk")
 
 func _ready() -> void:
 	if TubeEnabled:
@@ -43,12 +44,19 @@ func CreateClient():
 
 func AddPlayer(PeerId:int):
 	if PeerId==1 and multiplayer.multiplayer_peer is ENetMultiplayerPeer:return
-	var NewWarrior=WARRIOR.instantiate()
-	NewWarrior.name=str(PeerId)
-	var RandomX=randi_range(50,150)
-	NewWarrior.position=Vector2(RandomX,350)
-	get_tree().current_scene.add_child(NewWarrior,true)
-
+	if Global.MyCharacter=="Warrior":
+		var NewWarrior=WARRIOR.instantiate()
+		NewWarrior.name=str(PeerId)
+		var RandomX=randi_range(50,150)
+		NewWarrior.position=Vector2(RandomX,350)
+		get_tree().current_scene.add_child(NewWarrior,true)
+	if Global.MyCharacter=="Wizard":
+		var NewWizard=WIZARD.instantiate()
+		NewWizard.name=str(PeerId)
+		var RandomX=randi_range(50,150)
+		NewWizard.position=Vector2(RandomX,350)
+		get_tree().current_scene.add_child(NewWizard,true)
+		
 func OnConnectedToServer():
 	AddPlayer(multiplayer.get_unique_id())
 
@@ -77,3 +85,24 @@ func CleanUpSignals():
 func _exit_tree() -> void:
 	if TubeEnabled:
 		Tubeclient.leave_session()
+
+@rpc("any_peer","call_local")
+func ChangeCharacter(PeerId,NewCharacter):
+	var CharacterToChange=get_tree().current_scene.get_node_or_null(str(PeerId))
+	var SpawnPosition
+	if CharacterToChange:
+		SpawnPosition=CharacterToChange.position
+		CharacterToChange.name="Replacing"+str(PeerId)
+		CharacterToChange.queue_free()
+	SpawnReplaced(PeerId,NewCharacter,SpawnPosition)
+
+func SpawnReplaced(PeerId,NewCharacter,SpawnPosition):
+	var NewPlayer
+	if NewCharacter=="Warrior":
+		NewPlayer=WARRIOR.instantiate()
+	if NewCharacter=="Wizard":
+		NewPlayer=WIZARD.instantiate()
+	if NewPlayer:
+		NewPlayer.name=str(PeerId)
+		NewPlayer.position=SpawnPosition
+		get_tree().current_scene.add_child(NewPlayer,true)
