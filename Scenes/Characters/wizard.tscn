@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cduhud2k2tsa3"]
 
 [ext_resource type="Texture2D" uid="uid://1kf3e11qm2pk" path="res://Assets/Wizard Pack/Idle.png" id="1_0isxx"]
-[ext_resource type="Script" uid="uid://ckp2s2wjv4gma" path="res://Scripts/warrior.gd" id="1_2xlt6"]
+[ext_resource type="Script" uid="uid://jeswd5nyt417" path="res://Scripts/wizard.gd" id="1_2xlt6"]
 [ext_resource type="Texture2D" uid="uid://djunul4tkyinp" path="res://Assets/Wizard Pack/Attack1.png" id="2_pxfef"]
 [ext_resource type="Texture2D" uid="uid://bp434bwtho1e1" path="res://Assets/Wizard Pack/Attack2.png" id="3_n0adj"]
 [ext_resource type="Texture2D" uid="uid://4hfgc8a5x6si" path="res://Assets/Wizard Pack/Run.png" id="3_qhg22"]
@@ -316,7 +316,7 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4voqm"]
-size = Vector2(33, 45)
+size = Vector2(33, 60.5)
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fq4km"]
 properties/0/path = NodePath(".:position")
@@ -335,24 +335,21 @@ properties/4/path = NodePath("HealthLabel:text")
 properties/4/spawn = true
 properties/4/replication_mode = 1
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ckwxp"]
-size = Vector2(16, 54)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_qeq3o"]
-size = Vector2(48, 60)
-
 [node name="Wizard" type="CharacterBody2D" unique_id=910795566]
 z_index = 1
 collision_mask = 6
 script = ExtResource("1_2xlt6")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1259804910]
+scale = Vector2(0.75, 0.75)
 sprite_frames = SubResource("SpriteFrames_1mafl")
-animation = &"Jump"
+animation = &"Attack2"
 autoplay = "Idle"
+frame = 4
+frame_progress = 0.98209333
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2113056730]
-position = Vector2(-0.5, 1.5)
+position = Vector2(-5, 4.25)
 shape = SubResource("RectangleShape2D_4voqm")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=546485567]
@@ -457,25 +454,11 @@ offset_bottom = 7.0
 theme_override_fonts/font = ExtResource("8_6u32d")
 horizontal_alignment = 1
 
-[node name="Attack1Hitbox" type="Area2D" parent="." unique_id=480103397]
-
-[node name="Attack1CollisionShape" type="CollisionShape2D" parent="Attack1Hitbox" unique_id=70653582]
-position = Vector2(32, -4)
-shape = SubResource("RectangleShape2D_ckwxp")
-disabled = true
-
 [node name="DeathAnimationTimer" type="Timer" parent="." unique_id=546226928]
 one_shot = true
 
-[node name="Attack2Hitbox" type="Area2D" parent="." unique_id=1977916245]
-
-[node name="Attack2CollisionShape" type="CollisionShape2D" parent="Attack2Hitbox" unique_id=1880294941]
-position = Vector2(64, -6)
-shape = SubResource("RectangleShape2D_qeq3o")
-disabled = true
-
 [node name="InteractionRaycast" type="Node2D" parent="." unique_id=102835720]
-position = Vector2(0, 13)
+position = Vector2(0, 25)
 
 [node name="RayCast2DRight" type="RayCast2D" parent="InteractionRaycast" unique_id=1817797561]
 target_position = Vector2(40, 0)
@@ -485,9 +468,14 @@ collision_mask = 4
 target_position = Vector2(-40, 0)
 collision_mask = 4
 
+[node name="Attack1Duration" type="Timer" parent="." unique_id=494448958]
+unique_name_in_owner = true
+wait_time = 8.0
+one_shot = true
+
 [connection signal="timeout" from="AttackAnimationTimer" to="." method="_on_attack_animation_timer_timeout"]
 [connection signal="pressed" from="CanvasLayer/Menu/PanelContainer/MarginContainer/VBoxContainer/LeaveButton" to="." method="_on_leave_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/SelectMenu/Panel/HBoxContainer/Warrior" to="." method="_on_warrior_pressed"]
 [connection signal="pressed" from="CanvasLayer/SelectMenu/Panel/HBoxContainer/Button" to="." method="_on_button_pressed"]
-[connection signal="body_entered" from="Attack1Hitbox" to="." method="_on_area_2d_body_entered"]
 [connection signal="timeout" from="DeathAnimationTimer" to="." method="_on_death_animation_timer_timeout"]
+[connection signal="timeout" from="Attack1Duration" to="." method="_on_attack_1_duration_timeout"]

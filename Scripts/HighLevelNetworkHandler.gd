@@ -7,7 +7,8 @@ const WARRIOR = preload("uid://dm6l1a5i5eenu")
 const TUBE_CONTEXT = preload("uid://clf0g5oy74te3")
 var Tubeclient:=TubeClient.new()
 var TubeEnabled=true
-const WIZARD = preload("uid://ls1hryxa11nk")
+const WIZARD = preload("uid://cduhud2k2tsa3")
+
 
 func _ready() -> void:
 	if TubeEnabled:
