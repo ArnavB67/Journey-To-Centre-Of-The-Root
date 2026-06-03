@@ -16,13 +16,13 @@ func _ready() -> void:
 		get_tree().root.add_child.call_deferred(Tubeclient)
 
 func TubeCreate():
-	multiplayer.peer_connected.connect(AddPlayer)
+	multiplayer.peer_connected.connect(SendPlayerData)
 	multiplayer.peer_disconnected.connect(RemovePlayer)
 	Tubeclient.create_session()
-	AddPlayer(1)
+	GetPlayer(1,Global.MyCharacter,Vector2(100,350))
 
 func TubeJoin(SessionId:String):
-	multiplayer.peer_connected.connect(AddPlayer)
+	multiplayer.peer_connected.connect(SendPlayerData)
 	multiplayer.peer_disconnected.connect(RemovePlayer)
 	multiplayer.connected_to_server.connect(OnConnectedToServer)
 	Tubeclient.join_session(SessionId)
@@ -32,34 +32,48 @@ func CreateServer():
 	peer=ENetMultiplayerPeer.new()
 	peer.create_server(Port)
 	multiplayer.multiplayer_peer=peer
-	multiplayer.peer_connected.connect(AddPlayer)
+	multiplayer.peer_connected.connect(SendPlayerData)
 	multiplayer.peer_disconnected.connect(RemovePlayer)
 
 func CreateClient():
 	peer=ENetMultiplayerPeer.new()
 	peer.create_client(IpAddress,Port)
 	multiplayer.multiplayer_peer=peer
-	multiplayer.peer_connected.connect(AddPlayer)
+	multiplayer.peer_connected.connect(SendPlayerData)
 	multiplayer.peer_disconnected.connect(RemovePlayer)
 	multiplayer.connected_to_server.connect(OnConnectedToServer)
 
-func AddPlayer(PeerId:int):
-	if PeerId==1 and multiplayer.multiplayer_peer is ENetMultiplayerPeer:return
-	if Global.MyCharacter=="Warrior":
-		var NewWarrior=WARRIOR.instantiate()
-		NewWarrior.name=str(PeerId)
-		var RandomX=randi_range(50,150)
-		NewWarrior.position=Vector2(RandomX,350)
-		get_tree().current_scene.add_child(NewWarrior,true)
-	if Global.MyCharacter=="Wizard":
-		var NewWizard=WIZARD.instantiate()
-		NewWizard.name=str(PeerId)
-		var RandomX=randi_range(50,150)
-		NewWizard.position=Vector2(RandomX,350)
-		get_tree().current_scene.add_child(NewWizard,true)
+func SendPlayerData(PeerId:int):
+	var CurrentPlayerID=multiplayer.get_unique_id()
+	if CurrentPlayerID==1 and multiplayer.multiplayer_peer is ENetMultiplayerPeer:
+		return
+	var CurrentPlayerPosition=Vector2(100,350)
+	var CurrentPlayerNode=get_tree().current_scene.get_node_or_null(str(CurrentPlayerID))
+	if CurrentPlayerNode:
+		CurrentPlayerPosition=CurrentPlayerNode.position
+	
+	rpc_id(PeerId,"GetPlayer",CurrentPlayerID,Global.MyCharacter,CurrentPlayerPosition)
+
 		
 func OnConnectedToServer():
-	AddPlayer(multiplayer.get_unique_id())
+	var JoinedPlayerId=multiplayer.get_unique_id()
+	var RandPosition=Vector2(randi_range(50,150),350)
+	rpc("GetPlayer",JoinedPlayerId,Global.MyCharacter,RandPosition)
+
+@rpc("any_peer","call_local")
+func GetPlayer(PeerId,Character,SpawnPosition):
+	if get_tree().current_scene.has_node(str(PeerId)):
+		return
+	var NewPlayer=null
+	if Character=="Warrior":
+		NewPlayer=WARRIOR.instantiate()
+	if Character=="Wizard":
+		NewPlayer=WIZARD.instantiate()
+	
+	if NewPlayer:
+		NewPlayer.name=str(PeerId)
+		NewPlayer.position=SpawnPosition
+		get_tree().current_scene.add_child(NewPlayer,true)
 
 func RemovePlayer(PeerId):
 	if PeerId==1:
@@ -79,7 +93,7 @@ func LeaveServer():
 	get_tree().reload_current_scene()
 
 func CleanUpSignals():
-	multiplayer.peer_connected.disconnect(AddPlayer)
+	multiplayer.peer_connected.disconnect(SendPlayerData)
 	multiplayer.peer_disconnected.disconnect(RemovePlayer)
 	multiplayer.connected_to_server.disconnect(OnConnectedToServer)
 	

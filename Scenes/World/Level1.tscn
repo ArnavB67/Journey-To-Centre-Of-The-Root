@@ -9,8 +9,8 @@
 [sub_resource type="BoxMesh" id="BoxMesh_ucf3m"]
 
 [node name="Level1" type="Node2D" unique_id=1497155670]
-metadata/_edit_vertical_guides_ = [169.0]
-metadata/_edit_horizontal_guides_ = [369.0]
+metadata/_edit_vertical_guides_ = [100.0]
+metadata/_edit_horizontal_guides_ = [369.0, 349.0]
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1221355165]
 position = Vector2(10, 85)
@@ -41,3 +41,6 @@ shape = SubResource("RectangleShape2D_qcrco")
 position = Vector2(0, -4.5)
 scale = Vector2(20.000004, 10.999987)
 mesh = SubResource("BoxMesh_ucf3m")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1171060382]
+_spawnable_scenes = PackedStringArray("uid://c6gkl3o6jk388")

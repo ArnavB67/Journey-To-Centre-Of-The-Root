@@ -473,6 +473,10 @@ unique_name_in_owner = true
 wait_time = 8.0
 one_shot = true
 
+[node name="AttackSpawnPoint" type="Node2D" parent="." unique_id=974545853]
+unique_name_in_owner = true
+position = Vector2(43, -13)
+
 [connection signal="timeout" from="AttackAnimationTimer" to="." method="_on_attack_animation_timer_timeout"]
 [connection signal="pressed" from="CanvasLayer/Menu/PanelContainer/MarginContainer/VBoxContainer/LeaveButton" to="." method="_on_leave_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/SelectMenu/Panel/HBoxContainer/Warrior" to="." method="_on_warrior_pressed"]

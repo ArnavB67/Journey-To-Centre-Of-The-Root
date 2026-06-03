@@ -19,6 +19,8 @@ var CurrentSpectating=0
 @onready var select_menu: PanelContainer = $CanvasLayer/SelectMenu
 var CurrentPhysicsProcess=true
 @onready var attack_1_duration: Timer = %Attack1Duration
+const ATTACK_BALL = preload("uid://c6gkl3o6jk388")
+@onready var attack_spawn_point: Node2D = %AttackSpawnPoint
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
@@ -64,6 +66,7 @@ func _process(delta: float) -> void:
 			Attacking=true
 			PlayAttackAnimation.rpc(&"Attack2")
 			attack_animation_timer.start()
+			Attack2.rpc()
 
 @rpc("authority","call_local","reliable")
 func PlayAttackAnimation(AnimationName):
@@ -175,3 +178,10 @@ func Attack1Reset():
 func _on_attack_1_duration_timeout() -> void:
 	if is_multiplayer_authority():
 		Attack1Reset.rpc()
+
+@rpc("any_peer","call_local")
+func Attack2():
+	var AttackBall=ATTACK_BALL.instantiate()
+	AttackBall.global_position=attack_spawn_point.global_position
+	get_tree().current_scene.add_child(AttackBall)
+	

@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://c6gkl3o6jk388"]
+
+[ext_resource type="Texture2D" uid="uid://bljd51fj4trch" path="res://Assets/AttackBall.png" id="1_aglsp"]
+[ext_resource type="Script" uid="uid://wjgh8j33mmr8" path="res://Scripts/attack_ball.gd" id="1_d4pov"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_d4pov"]
+radius = 7.0
+
+[node name="AttackBall" type="Area2D" unique_id=1402290069]
+script = ExtResource("1_d4pov")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1744875659]
+texture = ExtResource("1_aglsp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1378053381]
+shape = SubResource("CircleShape2D_d4pov")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
