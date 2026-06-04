@@ -41,6 +41,3 @@ shape = SubResource("RectangleShape2D_qcrco")
 position = Vector2(0, -4.5)
 scale = Vector2(20.000004, 10.999987)
 mesh = SubResource("BoxMesh_ucf3m")
-
-[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1171060382]
-_spawnable_scenes = PackedStringArray("uid://c6gkl3o6jk388")

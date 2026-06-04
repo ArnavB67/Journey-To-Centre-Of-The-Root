@@ -1,7 +1,10 @@
 extends Area2D
 
 var AttackSpeed=100
-var AttackDirection=1
+@export var AttackDirection=1
+
+func _ready() -> void:
+	get_tree().create_timer(3.0).timeout.connect(queue_free)
 
 func _process(delta: float) -> void:
 	position.x+=AttackSpeed*delta*AttackDirection
@@ -9,4 +12,7 @@ func _process(delta: float) -> void:
 
 
 func _on_body_entered(body: Node2D) -> void:
-	pass # Replace with function body.
+	if is_multiplayer_authority():
+		if body.is_in_group("Players"):
+			body.GiveDamage.rpc(body.get_path(),15)
+	queue_free()

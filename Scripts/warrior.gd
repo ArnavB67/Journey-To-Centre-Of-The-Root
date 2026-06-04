@@ -59,7 +59,7 @@ func _process(delta: float) -> void:
 			
 		if Input.is_action_just_pressed(&"Attack2") and is_on_floor() and not Dead:
 			Attacking=true
-			attack_1_collision_shape.disabled=false
+			attack_2_collision_shape.disabled=false
 			PlayAttackAnimation.rpc(&"Attack2")
 			attack_animation_timer.start()
 
@@ -84,8 +84,10 @@ func _physics_process(delta: float) -> void:
 					animated_sprite_2d.flip_h=direction<0
 			if is_on_floor():
 				if direction!=0:
-					animated_sprite_2d.flip_h=direction<0
-					PlayAttackAnimation.rpc(&"Run")
+					var IsLeft=direction<0
+					animated_sprite_2d.flip_h=IsLeft
+					if animated_sprite_2d.animation!="Run":
+						PlayAttackAnimation.rpc(&"Run")
 					if direction<0:
 						attack_1_hitbox.scale.x=-1
 						attack_2_hitbox.scale.x=-1
@@ -93,7 +95,8 @@ func _physics_process(delta: float) -> void:
 						attack_1_hitbox.scale.x=1
 						attack_2_hitbox.scale.x=1
 				if direction==0:
-					PlayAttackAnimation.rpc(&"Idle")
+					if animated_sprite_2d.animation!="Idle":
+						PlayAttackAnimation.rpc(&"Idle")
 
 			if direction:
 				velocity.x = direction * SPEED
@@ -118,6 +121,8 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 	if is_multiplayer_authority():
 		if body.is_in_group("Players"):
 			GiveDamage.rpc(body.get_path(),10)
+
+
 
 @rpc("any_peer","call_local")
 func GiveDamage(DamagedPlayer,DamageAmount):
@@ -167,3 +172,9 @@ func _on_button_pressed() -> void:
 	if is_multiplayer_authority():
 		Global.MyCharacter="Wizard"
 		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Wizard")
+
+
+func _on_attack_2_hitbox_body_entered(body: Node2D) -> void:
+	if is_multiplayer_authority():
+		if body.is_in_group("Players"):
+			GiveDamage.rpc(body.get_path(),20)

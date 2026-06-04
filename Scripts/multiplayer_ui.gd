@@ -52,6 +52,7 @@ func _on_username_input_text_changed(new_text: String) -> void:
 
 
 func _on_join_web_rtc_pressed() -> void:
+	join_web_rtc.disabled=true
 	HighLevelNetworkHandler.TubeJoin(lobby_id_input.text)
 	multiplayer.connected_to_server.connect(AddLevel)
 

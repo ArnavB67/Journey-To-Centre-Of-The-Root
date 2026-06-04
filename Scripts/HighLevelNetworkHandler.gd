@@ -1,7 +1,7 @@
 extends Node
 
 const IpAddress:String="localhost"
-const Port:int=42069
+const Port:int=34523
 var peer:ENetMultiplayerPeer
 const WARRIOR = preload("uid://dm6l1a5i5eenu")
 const TUBE_CONTEXT = preload("uid://clf0g5oy74te3")
@@ -109,6 +109,7 @@ func ChangeCharacter(PeerId,NewCharacter):
 		SpawnPosition=CharacterToChange.position
 		CharacterToChange.name="Replacing"+str(PeerId)
 		CharacterToChange.queue_free()
+	await get_tree().create_timer(0.05).timeout
 	SpawnReplaced(PeerId,NewCharacter,SpawnPosition)
 
 func SpawnReplaced(PeerId,NewCharacter,SpawnPosition):

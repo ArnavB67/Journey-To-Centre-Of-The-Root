@@ -66,7 +66,7 @@ func _process(delta: float) -> void:
 			Attacking=true
 			PlayAttackAnimation.rpc(&"Attack2")
 			attack_animation_timer.start()
-			Attack2.rpc()
+			Attack2.rpc(animated_sprite_2d.flip_h)
 
 @rpc("authority","call_local","reliable")
 func PlayAttackAnimation(AnimationName):
@@ -90,9 +90,11 @@ func _physics_process(delta: float) -> void:
 			if is_on_floor():
 				if direction!=0:
 					animated_sprite_2d.flip_h=direction<0
-					PlayAttackAnimation.rpc(&"Run")
+					if animated_sprite_2d.animation!="Run":
+						PlayAttackAnimation.rpc(&"Run")
 				if direction==0:
-					PlayAttackAnimation.rpc(&"Idle")
+					if animated_sprite_2d.animation!="Idle":
+						PlayAttackAnimation.rpc(&"Idle")
 
 			if direction:
 				velocity.x = direction * SPEED
@@ -180,8 +182,13 @@ func _on_attack_1_duration_timeout() -> void:
 		Attack1Reset.rpc()
 
 @rpc("any_peer","call_local")
-func Attack2():
+func Attack2(IsLeft):
 	var AttackBall=ATTACK_BALL.instantiate()
+	AttackBall.top_level=true
 	AttackBall.global_position=attack_spawn_point.global_position
+	if IsLeft:
+		AttackBall.AttackDirection=-1
+	else:
+		AttackBall.AttackDirection=1
 	get_tree().current_scene.add_child(AttackBall)
 	

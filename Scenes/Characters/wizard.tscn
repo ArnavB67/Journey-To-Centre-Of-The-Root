@@ -320,20 +320,20 @@ size = Vector2(33, 60.5)
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fq4km"]
 properties/0/path = NodePath(".:position")
-properties/0/spawn = true
+properties/0/spawn = false
 properties/0/replication_mode = 1
 properties/1/path = NodePath("AnimatedSprite2D:animation")
-properties/1/spawn = true
-properties/1/replication_mode = 1
+properties/1/spawn = false
+properties/1/replication_mode = 2
 properties/2/path = NodePath("AnimatedSprite2D:flip_h")
-properties/2/spawn = true
-properties/2/replication_mode = 1
+properties/2/spawn = false
+properties/2/replication_mode = 2
 properties/3/path = NodePath("Username:text")
-properties/3/spawn = true
-properties/3/replication_mode = 1
+properties/3/spawn = false
+properties/3/replication_mode = 2
 properties/4/path = NodePath("HealthLabel:text")
-properties/4/spawn = true
-properties/4/replication_mode = 1
+properties/4/spawn = false
+properties/4/replication_mode = 2
 
 [node name="Wizard" type="CharacterBody2D" unique_id=910795566]
 z_index = 1
