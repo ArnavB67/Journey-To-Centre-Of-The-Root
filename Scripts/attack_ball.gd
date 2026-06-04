@@ -1,13 +1,13 @@
 extends Area2D
 
-var AttackSpeed=100
-@export var AttackDirection=1
+var AttackSpeed=400
+@export var AttackDirection=Vector2.RIGHT
 
 func _ready() -> void:
 	get_tree().create_timer(3.0).timeout.connect(queue_free)
 
 func _process(delta: float) -> void:
-	position.x+=AttackSpeed*delta*AttackDirection
+	position+=AttackSpeed*delta*AttackDirection
 
 
 

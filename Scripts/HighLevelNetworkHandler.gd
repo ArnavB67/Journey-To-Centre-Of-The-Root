@@ -1,7 +1,7 @@
 extends Node
 
 const IpAddress:String="localhost"
-const Port:int=34523
+const Port:int=32341
 var peer:ENetMultiplayerPeer
 const WARRIOR = preload("uid://dm6l1a5i5eenu")
 const TUBE_CONTEXT = preload("uid://clf0g5oy74te3")

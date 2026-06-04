@@ -20,6 +20,7 @@ var CurrentSpectating=0
 @onready var ray_cast_2d_left: RayCast2D = $InteractionRaycast/RayCast2DLeft
 @onready var select_menu: PanelContainer = $CanvasLayer/SelectMenu
 var CurrentPhysicsProcess=true
+var JumpCount=0
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
 
@@ -73,7 +74,8 @@ func _physics_process(delta: float) -> void:
 			if not is_on_floor():
 				velocity += get_gravity() * delta
 
-			if Input.is_action_just_pressed(&"jump") and is_on_floor():
+			if Input.is_action_just_pressed(&"jump") and (is_on_floor() or JumpCount!=1):
+				JumpCount+=1
 				velocity.y = JUMP_VELOCITY
 
 			var direction := Input.get_axis(&"left", &"right")
@@ -83,6 +85,7 @@ func _physics_process(delta: float) -> void:
 				if direction!=0:
 					animated_sprite_2d.flip_h=direction<0
 			if is_on_floor():
+				JumpCount=0
 				if direction!=0:
 					var IsLeft=direction<0
 					animated_sprite_2d.flip_h=IsLeft

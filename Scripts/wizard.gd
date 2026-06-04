@@ -36,7 +36,8 @@ func _ready() -> void:
 			$Username.text=Global.Username
 		camera_2d.make_current()
 		lobby_id.text="Lobby Code: "+HighLevelNetworkHandler.Tubeclient.session_id
-
+		Input.set_custom_mouse_cursor(preload("res://Assets/crosshair.png"))
+		
 func _process(delta: float) -> void:
 
 	if is_multiplayer_authority():
@@ -66,7 +67,13 @@ func _process(delta: float) -> void:
 			Attacking=true
 			PlayAttackAnimation.rpc(&"Attack2")
 			attack_animation_timer.start()
-			Attack2.rpc(animated_sprite_2d.flip_h)
+			var AimDirection=(get_global_mouse_position()-attack_spawn_point.global_position).normalized()
+			if animated_sprite_2d.flip_h:
+				AimDirection.x=-abs(AimDirection.x)
+			else:
+				AimDirection.x=abs(AimDirection.x)
+			AimDirection=AimDirection.normalized()
+			Attack2.rpc(AimDirection)
 
 @rpc("authority","call_local","reliable")
 func PlayAttackAnimation(AnimationName):
@@ -87,9 +94,11 @@ func _physics_process(delta: float) -> void:
 				PlayAttackAnimation.rpc(&"Jump")
 				if direction!=0:
 					animated_sprite_2d.flip_h=direction<0
+					attack_spawn_point.position.x = -43 if direction < 0 else 43
 			if is_on_floor():
 				if direction!=0:
 					animated_sprite_2d.flip_h=direction<0
+					attack_spawn_point.position.x = -43 if direction < 0 else 43
 					if animated_sprite_2d.animation!="Run":
 						PlayAttackAnimation.rpc(&"Run")
 				if direction==0:
@@ -182,13 +191,11 @@ func _on_attack_1_duration_timeout() -> void:
 		Attack1Reset.rpc()
 
 @rpc("any_peer","call_local")
-func Attack2(IsLeft):
+func Attack2(AimDirection):
 	var AttackBall=ATTACK_BALL.instantiate()
 	AttackBall.top_level=true
 	AttackBall.global_position=attack_spawn_point.global_position
-	if IsLeft:
-		AttackBall.AttackDirection=-1
-	else:
-		AttackBall.AttackDirection=1
+	AttackBall.AttackDirection=AimDirection
+	AttackBall.rotation=AimDirection.angle()
 	get_tree().current_scene.add_child(AttackBall)
 	
