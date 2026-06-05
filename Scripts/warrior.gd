@@ -21,6 +21,10 @@ var CurrentSpectating=0
 @onready var select_menu: PanelContainer = $CanvasLayer/SelectMenu
 var CurrentPhysicsProcess=true
 var JumpCount=0
+var CurrentCooldownAttack1=0
+var CurrentCooldownAttack2=0
+var Attack1Cooldown=1
+var Attack2Cooldown=5
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
 
@@ -38,6 +42,26 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if is_multiplayer_authority():
+		if CurrentCooldownAttack1>0:
+			CurrentCooldownAttack1-=delta
+			%Attack1CooldownW.max_value=Attack1Cooldown
+			%Attack1CooldownW.value=CurrentCooldownAttack1
+			$CanvasLayer/HBoxContainer/Attack1CooldownW/Cooldown.text=str(ceil(CurrentCooldownAttack1))
+			$CanvasLayer/HBoxContainer/Attack1CooldownW/Cooldown.show()
+		else:
+			%Attack1CooldownW.value=0
+			$CanvasLayer/HBoxContainer/Attack1CooldownW/Cooldown.hide()
+		
+		if CurrentCooldownAttack2>0:
+			CurrentCooldownAttack2-=delta
+			%Attack2CooldownW.max_value=Attack2Cooldown
+			%Attack2CooldownW.value=CurrentCooldownAttack2
+			$CanvasLayer/HBoxContainer/Attack2CooldownW/Cooldown.text=str(ceil(CurrentCooldownAttack2))
+			$CanvasLayer/HBoxContainer/Attack2CooldownW/Cooldown.show()
+		else:
+			%Attack2CooldownW.value=0
+			$CanvasLayer/HBoxContainer/Attack2CooldownW/Cooldown.hide()
+		
 		if ray_cast_2d_left.is_colliding()or ray_cast_2d_right.is_colliding():
 			if Input.is_action_just_pressed(&"Interact"):
 				select_menu.visible=!select_menu.visible
@@ -52,14 +76,16 @@ func _process(delta: float) -> void:
 			return
 
 		health_label.text=str(Health)
-		if Input.is_action_just_pressed(&"Attack1") and is_on_floor() and not Dead:
+		if Input.is_action_just_pressed(&"Attack1") and is_on_floor() and not Dead and CurrentCooldownAttack1<=0:
 			Attacking=true
+			CurrentCooldownAttack1=Attack1Cooldown
 			attack_1_collision_shape.disabled=false
 			attack_animation_timer.start()
 			PlayAttackAnimation.rpc(&"Attack1")
 			
-		if Input.is_action_just_pressed(&"Attack2") and is_on_floor() and not Dead:
+		if Input.is_action_just_pressed(&"Attack2") and is_on_floor() and not Dead and CurrentCooldownAttack2<=0:
 			Attacking=true
+			CurrentCooldownAttack2=Attack2Cooldown
 			attack_2_collision_shape.disabled=false
 			PlayAttackAnimation.rpc(&"Attack2")
 			attack_animation_timer.start()

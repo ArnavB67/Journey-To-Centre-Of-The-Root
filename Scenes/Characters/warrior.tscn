@@ -8,6 +8,9 @@
 [ext_resource type="Texture2D" uid="uid://c3nvkxfnja5eb" path="res://Assets/Hero Knight/Sprites/Run.png" id="5_bq06q"]
 [ext_resource type="Texture2D" uid="uid://865sskptnpb6" path="res://Assets/Hero Knight/Sprites/Death.png" id="6_nn0j2"]
 [ext_resource type="FontFile" uid="uid://r15t4v2wn6yy" path="res://Assets/fonts/PixelOperator8.ttf" id="8_ckwxp"]
+[ext_resource type="Texture2D" uid="uid://b3d2pxhp26lqq" path="res://Assets/Slash.png" id="9_nn0j2"]
+[ext_resource type="Texture2D" uid="uid://cth1o3d3d5jua" path="res://Assets/CooldownBox.png" id="10_m0oh0"]
+[ext_resource type="Texture2D" uid="uid://dpvmydqcbmfss" path="res://Assets/Smash.png" id="11_yalqd"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ea8ps"]
 atlas = ExtResource("1_3oxwj")
@@ -493,6 +496,43 @@ text = "Warrior"
 [node name="Button" type="Button" parent="CanvasLayer/SelectMenu/Panel/HBoxContainer" unique_id=1195415853]
 layout_mode = 2
 text = "Wizard"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer" unique_id=1674618228]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Attack1CooldownW" type="TextureProgressBar" parent="CanvasLayer/HBoxContainer" unique_id=233208789]
+unique_name_in_owner = true
+layout_mode = 2
+step = 0.01
+fill_mode = 4
+texture_under = ExtResource("9_nn0j2")
+texture_progress = ExtResource("10_m0oh0")
+
+[node name="Cooldown" type="Label" parent="CanvasLayer/HBoxContainer/Attack1CooldownW" unique_id=1462176228]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Attack2CooldownW" type="TextureProgressBar" parent="CanvasLayer/HBoxContainer" unique_id=1643368607]
+unique_name_in_owner = true
+layout_mode = 2
+step = 0.01
+fill_mode = 4
+texture_under = ExtResource("11_yalqd")
+texture_progress = ExtResource("10_m0oh0")
+
+[node name="Cooldown" type="Label" parent="CanvasLayer/HBoxContainer/Attack2CooldownW" unique_id=260823289]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
 
 [node name="Username" type="Label" parent="." unique_id=458076531]
 offset_left = -25.0

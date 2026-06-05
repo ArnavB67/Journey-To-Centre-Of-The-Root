@@ -8,6 +8,10 @@
 [ext_resource type="Texture2D" uid="uid://c1j0ykqk3i0nk" path="res://Assets/Wizard Pack/Death.png" id="4_w365l"]
 [ext_resource type="Texture2D" uid="uid://didva5f3kls1f" path="res://Assets/Wizard Pack/Jump.png" id="6_2xlt6"]
 [ext_resource type="FontFile" uid="uid://r15t4v2wn6yy" path="res://Assets/fonts/PixelOperator8.ttf" id="8_6u32d"]
+[ext_resource type="FontFile" uid="uid://tnt1irog7ty4" path="res://Assets/fonts/PixelOperator8-Bold.ttf" id="9_1mafl"]
+[ext_resource type="Texture2D" uid="uid://dvs3d2cerqb5a" path="res://Assets/Staff.png" id="9_pamj8"]
+[ext_resource type="Texture2D" uid="uid://cth1o3d3d5jua" path="res://Assets/CooldownBox.png" id="10_5w5us"]
+[ext_resource type="Texture2D" uid="uid://bljd51fj4trch" path="res://Assets/AttackBall.png" id="12_n4hfu"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8c4n6"]
 atlas = ExtResource("2_pxfef")
@@ -435,6 +439,67 @@ text = "Warrior"
 layout_mode = 2
 text = "Wizard"
 
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer" unique_id=933892672]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Attack1Cooldown" type="TextureProgressBar" parent="CanvasLayer/HBoxContainer" unique_id=1971047747]
+unique_name_in_owner = true
+layout_mode = 2
+step = 0.01
+fill_mode = 4
+texture_under = ExtResource("9_pamj8")
+texture_progress = ExtResource("10_5w5us")
+
+[node name="Cooldown" type="Label" parent="CanvasLayer/HBoxContainer/Attack1Cooldown" unique_id=294941295]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_fonts/font = ExtResource("9_1mafl")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Attack2Cooldown" type="TextureProgressBar" parent="CanvasLayer/HBoxContainer" unique_id=537276743]
+unique_name_in_owner = true
+layout_mode = 2
+step = 0.01
+fill_mode = 4
+texture_under = ExtResource("12_n4hfu")
+texture_progress = ExtResource("10_5w5us")
+
+[node name="Cooldown" type="Label" parent="CanvasLayer/HBoxContainer/Attack2Cooldown" unique_id=1255316370]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_fonts/font = ExtResource("9_1mafl")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BuffTimer" type="TextureProgressBar" parent="CanvasLayer" unique_id=1702360729]
+unique_name_in_owner = true
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+step = 0.01
+fill_mode = 3
+texture_under = ExtResource("9_pamj8")
+texture_progress = ExtResource("10_5w5us")
+
+[node name="TimeRemain" type="Label" parent="CanvasLayer/BuffTimer" unique_id=1821581783]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
 [node name="Username" type="Label" parent="." unique_id=458076531]
 offset_left = -25.0
 offset_top = -38.0
@@ -470,7 +535,7 @@ collision_mask = 4
 
 [node name="Attack1Duration" type="Timer" parent="." unique_id=494448958]
 unique_name_in_owner = true
-wait_time = 8.0
+wait_time = 5.0
 one_shot = true
 
 [node name="AttackSpawnPoint" type="Node2D" parent="." unique_id=974545853]

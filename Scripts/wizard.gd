@@ -21,6 +21,8 @@ var CurrentPhysicsProcess=true
 @onready var attack_1_duration: Timer = %Attack1Duration
 const ATTACK_BALL = preload("uid://c6gkl3o6jk388")
 @onready var attack_spawn_point: Node2D = %AttackSpawnPoint
+var CurrentCooldownAttack1=0
+var CurrentCooldownAttack2=0
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
@@ -39,10 +41,33 @@ func _ready() -> void:
 		Input.set_custom_mouse_cursor(preload("res://Assets/crosshair.png"))
 		
 func _process(delta: float) -> void:
-
 	if is_multiplayer_authority():
 		if not attack_1_duration.is_stopped():
-			print("time left: ",attack_1_duration.time_left)
+			%BuffTimer.max_value=5
+			%BuffTimer.value=attack_1_duration.time_left
+			$CanvasLayer/BuffTimer/TimeRemain.text=str(ceil(attack_1_duration.time_left))
+			$CanvasLayer/BuffTimer/TimeRemain.show()
+		
+		if CurrentCooldownAttack1>0:
+			CurrentCooldownAttack1-=delta
+			%Attack1Cooldown.max_value=Attack1Cooldown
+			%Attack1Cooldown.value=CurrentCooldownAttack1
+			$CanvasLayer/HBoxContainer/Attack1Cooldown/Cooldown.text=str(ceil(CurrentCooldownAttack1))
+			$CanvasLayer/HBoxContainer/Attack1Cooldown/Cooldown.show()
+		else:
+			%Attack1Cooldown.value=0
+			$CanvasLayer/HBoxContainer/Attack1Cooldown/Cooldown.hide()
+		
+		if CurrentCooldownAttack2>0:
+			CurrentCooldownAttack2-=delta
+			%Attack2Cooldown.max_value=Attack2Cooldown
+			%Attack2Cooldown.value=CurrentCooldownAttack2
+			$CanvasLayer/HBoxContainer/Attack2Cooldown/Cooldown.text=str(ceil(CurrentCooldownAttack2))
+			$CanvasLayer/HBoxContainer/Attack2Cooldown/Cooldown.show()
+		else:
+			%Attack2Cooldown.value=0
+			$CanvasLayer/HBoxContainer/Attack2Cooldown/Cooldown.hide()
+		
 		if ray_cast_2d_left.is_colliding()or ray_cast_2d_right.is_colliding():
 			if Input.is_action_just_pressed(&"Interact"):
 				select_menu.visible=!select_menu.visible
@@ -57,14 +82,16 @@ func _process(delta: float) -> void:
 			return
 
 		health_label.text=str(Health)
-		if Input.is_action_just_pressed(&"Attack1") and is_on_floor() and not Dead and not Attacking:
+		if Input.is_action_just_pressed(&"Attack1") and is_on_floor() and not Dead and not Attacking and CurrentCooldownAttack1<=0:
 			Attacking=true
+			CurrentCooldownAttack1=Attack1Cooldown
 			attack_animation_timer.start()
 			PlayAttackAnimation.rpc(&"Attack1")
 			Attack1.rpc()
 			
-		if Input.is_action_just_pressed(&"Attack2") and is_on_floor() and not Dead and not Attacking:
+		if Input.is_action_just_pressed(&"Attack2") and is_on_floor() and not Dead and not Attacking and CurrentCooldownAttack2<=0:
 			Attacking=true
+			CurrentCooldownAttack2=Attack2Cooldown
 			PlayAttackAnimation.rpc(&"Attack2")
 			attack_animation_timer.start()
 			var AimDirection=(get_global_mouse_position()-attack_spawn_point.global_position).normalized()
@@ -189,6 +216,8 @@ func Attack1Reset():
 func _on_attack_1_duration_timeout() -> void:
 	if is_multiplayer_authority():
 		Attack1Reset.rpc()
+		$CanvasLayer/BuffTimer/TimeRemain.hide()
+
 
 @rpc("any_peer","call_local")
 func Attack2(AimDirection):
