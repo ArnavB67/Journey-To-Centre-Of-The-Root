@@ -6,7 +6,9 @@ const WARRIOR = preload("uid://dm6l1a5i5eenu")
 @onready var lobby_id_input: LineEdit = $PanelContainer/MarginContainer/HBoxContainer/WebRtc/LobbyIdInput
 @onready var v_box_container: VBoxContainer = $PanelContainer/MarginContainer/HBoxContainer/VBoxContainer
 @onready var web_rtc: VBoxContainer = %WebRtc
-
+var RetryCount=0
+var MaxRetry=5
+var CurrentAction=""
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -52,9 +54,13 @@ func _on_username_input_text_changed(new_text: String) -> void:
 
 
 func _on_join_web_rtc_pressed() -> void:
+	CurrentAction="Joining"
+	RetryCount=0
 	join_web_rtc.disabled=true
+	join_web_rtc.text="Connecting..."
 	HighLevelNetworkHandler.TubeJoin(lobby_id_input.text)
-	multiplayer.connected_to_server.connect(AddLevel)
+	if not multiplayer.connected_to_server.is_connected(AddLevel):
+		multiplayer.connected_to_server.connect(AddLevel)
 
 
 func _on_quit_web_rtc_pressed() -> void:
@@ -62,12 +68,25 @@ func _on_quit_web_rtc_pressed() -> void:
 
 
 func _on_host_server_pressed() -> void:
+	CurrentAction="Hosting"
 	HighLevelNetworkHandler.TubeCreate()
 	AddLevel()
 	
 
 func OnErrorRaised(_Code,_Message):
-	lobby_id_input.text=''
-	join_web_rtc.add_theme_color_override(&"font_disabled_color",Color.DARK_RED)
-	join_web_rtc.disabled=true
 	HighLevelNetworkHandler.CleanUpSignals()
+	if CurrentAction=="Joining" and RetryCount<MaxRetry:
+		RetryCount+=1
+		join_web_rtc.text="Waiting For Server..."+str(RetryCount)
+		await get_tree().create_timer(3.0).timeout
+		HighLevelNetworkHandler.TubeJoin(lobby_id_input.text)
+		if not multiplayer.connected_to_server.is_connected(AddLevel):
+			multiplayer.connected_to_server.connect(AddLevel)
+			
+	else:
+		join_web_rtc.add_theme_color_override(&"font_color",Color.RED)
+		join_web_rtc.text="Failed To Connect, Please Retry"
+		await get_tree().create_timer(2.0).timeout
+		join_web_rtc.remove_theme_color_override(&"font_color")
+		join_web_rtc.text="Join"
+		join_web_rtc.disabled=false

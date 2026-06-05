@@ -26,7 +26,6 @@ var CurrentCooldownAttack2=0
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
-
 func _ready() -> void:
 	add_to_group('Players')
 	if not is_multiplayer_authority():
