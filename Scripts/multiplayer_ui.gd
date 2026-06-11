@@ -49,6 +49,7 @@ func _on_lobby_id_input_text_changed(new_text: String) -> void:
 	if new_text!='':
 		join_web_rtc.disabled=false
 
+
 func _on_username_input_text_changed(new_text: String) -> void:
 	Global.Username=new_text
 

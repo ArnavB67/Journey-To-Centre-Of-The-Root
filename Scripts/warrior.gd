@@ -207,3 +207,9 @@ func _on_attack_2_hitbox_body_entered(body: Node2D) -> void:
 	if is_multiplayer_authority():
 		if body.is_in_group("Players"):
 			GiveDamage.rpc(body.get_path(),20)
+
+
+func _on_archer_pressed() -> void:
+	if is_multiplayer_authority():
+		Global.MyCharacter="Archer"
+		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Archer")

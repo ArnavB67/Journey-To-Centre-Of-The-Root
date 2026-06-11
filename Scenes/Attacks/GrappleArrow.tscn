@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://d0uswe3hxap8o"]
+
+[ext_resource type="Script" uid="uid://07q7q1u0jkon" path="res://Scripts/grapple_arrow.gd" id="1_ums88"]
+[ext_resource type="Texture2D" uid="uid://bqgi5syy8gfu2" path="res://Assets/Archer/Sprites/Arrow/Static.png" id="2_v8pnn"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ums88"]
+size = Vector2(22, 2)
+
+[node name="GrappleArrow" type="Area2D" unique_id=1402290069]
+collision_layer = 16
+collision_mask = 6
+script = ExtResource("1_ums88")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1744875659]
+texture = ExtResource("2_v8pnn")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1378053381]
+shape = SubResource("RectangleShape2D_ums88")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

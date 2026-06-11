@@ -8,6 +8,10 @@
 
 [sub_resource type="BoxMesh" id="BoxMesh_ucf3m"]
 
+[sub_resource type="BoxMesh" id="BoxMesh_eobk4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_31cnu"]
+
 [node name="Level1" type="Node2D" unique_id=1497155670]
 metadata/_edit_vertical_guides_ = [100.0]
 metadata/_edit_horizontal_guides_ = [369.0, 349.0]
@@ -41,3 +45,15 @@ shape = SubResource("RectangleShape2D_qcrco")
 position = Vector2(0, -4.5)
 scale = Vector2(20.000004, 10.999987)
 mesh = SubResource("BoxMesh_ucf3m")
+
+[node name="StaticBody2D2" type="StaticBody2D" parent="." unique_id=1972538125]
+position = Vector2(978, 183)
+collision_layer = 2
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="StaticBody2D2" unique_id=191512305]
+position = Vector2(-1.9073486e-06, -1.9073486e-06)
+scale = Vector2(20.000004, 20.000004)
+mesh = SubResource("BoxMesh_eobk4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D2" unique_id=628519995]
+shape = SubResource("RectangleShape2D_31cnu")

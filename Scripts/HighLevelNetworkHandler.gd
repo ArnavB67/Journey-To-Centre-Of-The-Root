@@ -8,6 +8,7 @@ const TUBE_CONTEXT = preload("uid://clf0g5oy74te3")
 var Tubeclient:=TubeClient.new()
 var TubeEnabled=true
 const WIZARD = preload("uid://cduhud2k2tsa3")
+const ARCHER = preload("uid://08t71ibaehpe")
 
 
 func _ready() -> void:
@@ -69,7 +70,9 @@ func GetPlayer(PeerId,Character,SpawnPosition):
 		NewPlayer=WARRIOR.instantiate()
 	if Character=="Wizard":
 		NewPlayer=WIZARD.instantiate()
-	
+	if Character=="Archer":
+		NewPlayer=ARCHER.instantiate()
+		
 	if NewPlayer:
 		NewPlayer.name=str(PeerId)
 		NewPlayer.position=SpawnPosition
@@ -118,6 +121,8 @@ func SpawnReplaced(PeerId,NewCharacter,SpawnPosition):
 		NewPlayer=WARRIOR.instantiate()
 	if NewCharacter=="Wizard":
 		NewPlayer=WIZARD.instantiate()
+	if NewCharacter=="Archer":
+		NewPlayer=ARCHER.instantiate()
 	if NewPlayer:
 		NewPlayer.name=str(PeerId)
 		NewPlayer.position=SpawnPosition

@@ -497,6 +497,10 @@ text = "Warrior"
 layout_mode = 2
 text = "Wizard"
 
+[node name="Archer" type="Button" parent="CanvasLayer/SelectMenu/Panel/HBoxContainer" unique_id=345234419]
+layout_mode = 2
+text = "Archer"
+
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer" unique_id=1674618228]
 anchors_preset = 3
 anchor_left = 1.0
@@ -585,6 +589,7 @@ collision_mask = 4
 [connection signal="pressed" from="CanvasLayer/Menu/PanelContainer/MarginContainer/VBoxContainer/LeaveButton" to="." method="_on_leave_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/SelectMenu/Panel/HBoxContainer/Warrior" to="." method="_on_warrior_pressed"]
 [connection signal="pressed" from="CanvasLayer/SelectMenu/Panel/HBoxContainer/Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/SelectMenu/Panel/HBoxContainer/Archer" to="." method="_on_archer_pressed"]
 [connection signal="body_entered" from="Attack1Hitbox" to="." method="_on_area_2d_body_entered"]
 [connection signal="timeout" from="DeathAnimationTimer" to="." method="_on_death_animation_timer_timeout"]
 [connection signal="body_entered" from="Attack2Hitbox" to="." method="_on_attack_2_hitbox_body_entered"]

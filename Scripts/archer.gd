@@ -2,10 +2,10 @@ extends CharacterBody2D
 
 @export var Dead=false
 @export var Health=100
-var SPEED = 150.0
-var JUMP_VELOCITY = -250.0
-var Attack1Cooldown=10
-var Attack2Cooldown=3
+var SPEED = 250.0
+var JUMP_VELOCITY = -450.0
+var Attack1Cooldown=1.5
+var Attack2Cooldown=5
 @onready var camera_2d: Camera2D = %Camera2D
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 var Attacking=false
@@ -19,7 +19,8 @@ var CurrentSpectating=0
 @onready var select_menu: PanelContainer = $CanvasLayer/SelectMenu
 var CurrentPhysicsProcess=true
 @onready var attack_1_duration: Timer = %Attack1Duration
-const ATTACK_BALL = preload("uid://c6gkl3o6jk388")
+const ARROW = preload("uid://cxi2neiheg8xg")
+const GRAPPLE_ARROW = preload("uid://d0uswe3hxap8o")
 @onready var attack_spawn_point: Node2D = %AttackSpawnPoint
 var CurrentCooldownAttack1=0
 var CurrentCooldownAttack2=0
@@ -42,11 +43,6 @@ func _ready() -> void:
 		
 func _process(delta: float) -> void:
 	if is_multiplayer_authority():
-		if not attack_1_duration.is_stopped():
-			%BuffTimer.max_value=5
-			%BuffTimer.value=attack_1_duration.time_left
-			$CanvasLayer/BuffTimer/TimeRemain.text=str(ceil(attack_1_duration.time_left))
-			$CanvasLayer/BuffTimer/TimeRemain.show()
 		
 		if CurrentCooldownAttack1>0:
 			CurrentCooldownAttack1-=delta
@@ -86,8 +82,14 @@ func _process(delta: float) -> void:
 			Attacking=true
 			CurrentCooldownAttack1=Attack1Cooldown
 			attack_animation_timer.start()
-			PlayAttackAnimation.rpc(&"Attack1")
-			Attack1.rpc()
+			PlayAttackAnimation.rpc(&"ShootArrow")
+			var AimDirection=(get_global_mouse_position()-attack_spawn_point.global_position).normalized()
+			if animated_sprite_2d.flip_h:
+				AimDirection.x=-abs(AimDirection.x)
+			else:
+				AimDirection.x=abs(AimDirection.x)
+			AimDirection=AimDirection.normalized()
+			Attack1.rpc(AimDirection)
 			
 		if Input.is_action_just_pressed(&"Attack2") and is_on_floor() and not Dead and not Attacking and CurrentCooldownAttack2<=0:
 			Attacking=true
@@ -199,35 +201,25 @@ func _on_button_pressed() -> void:
 		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Wizard")
 
 @rpc("any_peer","call_local")
-func Attack1():
-	SPEED=400
-	JUMP_VELOCITY=-500	
-	Attack2Cooldown=2
-	if is_multiplayer_authority():
-		if attack_1_duration.is_stopped():
-			attack_1_duration.start()
-
-@rpc("any_peer","call_local")
-func Attack1Reset():
-	SPEED=150
-	JUMP_VELOCITY=-250
-	Attack2Cooldown=3
-
-func _on_attack_1_duration_timeout() -> void:
-	if is_multiplayer_authority():
-		Attack1Reset.rpc()
-		$CanvasLayer/BuffTimer/TimeRemain.hide()
+func Attack1(AimDirection):
+	var Arrow=ARROW.instantiate()
+	Arrow.top_level=true
+	Arrow.global_position=attack_spawn_point.global_position
+	Arrow.AttackDirection=AimDirection
+	Arrow.rotation=AimDirection.angle()
+	get_tree().current_scene.add_child(Arrow)
 
 
 @rpc("any_peer","call_local")
 func Attack2(AimDirection):
-	var AttackBall=ATTACK_BALL.instantiate()
-	AttackBall.top_level=true
-	AttackBall.global_position=attack_spawn_point.global_position
-	AttackBall.AttackDirection=AimDirection
-	AttackBall.rotation=AimDirection.angle()
-	get_tree().current_scene.add_child(AttackBall)
+	var GrappleArrow=GRAPPLE_ARROW.instantiate()
+	GrappleArrow.top_level=true
+	GrappleArrow.global_position=attack_spawn_point.global_position
+	GrappleArrow.AttackDirection=AimDirection
+	GrappleArrow.rotation=AimDirection.angle()
+	get_tree().current_scene.add_child(GrappleArrow)
 	
+
 
 func _on_archer_pressed() -> void:
 	if is_multiplayer_authority():
