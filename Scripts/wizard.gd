@@ -28,6 +28,8 @@ func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
 	
 func _ready() -> void:
+	floor_max_angle=deg_to_rad(85)
+	floor_snap_length=16
 	add_to_group('Players')
 	if not is_multiplayer_authority():
 		set_process(false)
@@ -94,6 +96,12 @@ func _process(delta: float) -> void:
 			CurrentCooldownAttack2=Attack2Cooldown
 			PlayAttackAnimation.rpc(&"Attack2")
 			attack_animation_timer.start()
+			var IsAimingLeft=get_global_mouse_position().x<global_position.x
+			animated_sprite_2d.flip_h=IsAimingLeft
+			if IsAimingLeft:
+				attack_spawn_point.position.x=-43
+			else:
+				attack_spawn_point.position.x=43
 			var AimDirection=(get_global_mouse_position()-attack_spawn_point.global_position).normalized()
 			if animated_sprite_2d.flip_h:
 				AimDirection.x=-abs(AimDirection.x)
@@ -108,6 +116,11 @@ func PlayAttackAnimation(AnimationName):
 	
 
 func _physics_process(delta: float) -> void:
+	if not Dead:
+		if is_on_floor():
+			var RealRotation= get_floor_normal().angle()+(PI/2)
+			rotation=lerp_angle(rotation,RealRotation,15*delta)
+	
 	if not Attacking and not Dead:
 			if not is_on_floor():
 				velocity += get_gravity() * delta

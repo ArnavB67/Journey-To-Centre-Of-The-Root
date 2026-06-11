@@ -27,14 +27,14 @@ func CreateRope():
 	Rope.collision_layer=2
 	var CollisionShape=CollisionShape2D.new()
 	var Segment=SegmentShape2D.new()
-	Segment.a=to_local(InitialPosition)
+	Segment.a=to_local(InitialPosition+Vector2(0,32))
 	Segment.b=Vector2.ZERO
 	CollisionShape.shape=Segment
 	Rope.add_child(CollisionShape)
 	var VisualRope=Line2D.new()
 	VisualRope.add_point(Segment.a)
 	VisualRope.add_point(Segment.b)
-	VisualRope.width=8
+	VisualRope.width=2
 	VisualRope.default_color=Color(0.6,0.4,0.2,0.9)
 	Rope.add_child(VisualRope)
 	add_child(Rope)

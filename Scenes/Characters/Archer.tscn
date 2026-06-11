@@ -319,8 +319,9 @@ animations = [{
 "speed": 20.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_4voqm"]
-size = Vector2(30, 42)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gmn5d"]
+radius = 14.0
+height = 52.0
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fq4km"]
 properties/0/path = NodePath(".:position")
@@ -338,6 +339,9 @@ properties/3/replication_mode = 2
 properties/4/path = NodePath("HealthLabel:text")
 properties/4/spawn = false
 properties/4/replication_mode = 2
+properties/5/path = NodePath(".:rotation")
+properties/5/spawn = true
+properties/5/replication_mode = 1
 
 [node name="Archer" type="CharacterBody2D" unique_id=910795566]
 z_index = 1
@@ -351,8 +355,8 @@ animation = &"ShootArrow"
 autoplay = "Idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2113056730]
-position = Vector2(-4, 0)
-shape = SubResource("RectangleShape2D_4voqm")
+position = Vector2(-4, -4)
+shape = SubResource("CapsuleShape2D_gmn5d")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=546485567]
 unique_name_in_owner = true
@@ -542,7 +546,7 @@ one_shot = true
 
 [node name="AttackSpawnPoint" type="Node2D" parent="." unique_id=974545853]
 unique_name_in_owner = true
-position = Vector2(43, -13)
+position = Vector2(19, -9)
 
 [connection signal="timeout" from="AttackAnimationTimer" to="." method="_on_attack_animation_timer_timeout"]
 [connection signal="pressed" from="CanvasLayer/Menu/PanelContainer/MarginContainer/VBoxContainer/LeaveButton" to="." method="_on_leave_button_pressed"]
