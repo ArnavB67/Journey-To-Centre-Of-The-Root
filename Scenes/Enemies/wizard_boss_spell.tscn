@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://b0y2pnlu1laws"]
+
+[ext_resource type="Script" uid="uid://db8pkhog8osfm" path="res://Scripts/wizard_boss_spell.gd" id="1_54kcn"]
+[ext_resource type="Texture2D" uid="uid://d2jaubrq26ygx" path="res://Assets/WizardBossSpell.png" id="1_mixjv"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_54kcn"]
+size = Vector2(54, 105)
+
+[node name="WizardBossSpell" type="Area2D" unique_id=348043949]
+script = ExtResource("1_54kcn")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1449153741]
+texture = ExtResource("1_mixjv")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1788381558]
+position = Vector2(4, 0.5)
+shape = SubResource("RectangleShape2D_54kcn")

@@ -562,6 +562,7 @@ theme_override_fonts/font = ExtResource("8_ckwxp")
 horizontal_alignment = 1
 
 [node name="Attack1Hitbox" type="Area2D" parent="." unique_id=480103397]
+collision_mask = 8
 
 [node name="Attack1CollisionShape" type="CollisionShape2D" parent="Attack1Hitbox" unique_id=70653582]
 position = Vector2(32, -4)
@@ -572,6 +573,7 @@ disabled = true
 one_shot = true
 
 [node name="Attack2Hitbox" type="Area2D" parent="." unique_id=1977916245]
+collision_mask = 8
 
 [node name="Attack2CollisionShape" type="CollisionShape2D" parent="Attack2Hitbox" unique_id=1880294941]
 position = Vector2(64, -6)

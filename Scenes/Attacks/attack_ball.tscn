@@ -7,6 +7,7 @@
 radius = 7.0
 
 [node name="AttackBall" type="Area2D" unique_id=1402290069]
+collision_mask = 10
 script = ExtResource("1_d4pov")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1744875659]
