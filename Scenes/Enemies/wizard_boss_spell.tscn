@@ -15,3 +15,5 @@ texture = ExtResource("1_mixjv")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1788381558]
 position = Vector2(4, 0.5)
 shape = SubResource("RectangleShape2D_54kcn")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

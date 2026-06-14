@@ -68,28 +68,44 @@ func ChasePlayer(delta):
 			attack_1_hitbox.scale.x=-1
 		else:
 			attack_1_hitbox.scale.x=1
-	if not OnCooldown:
-		if PlannedAttack=="RetreatAndSpell":
-			if Distance>160 or is_on_wall():
-				PlannedAttack="Spell"
-			else:
-				velocity.x=-Direction*Speed*0.8
-				if animated_sprite_2d.animation!="Run":
-					PlayAnimation.rpc("Run")
-				return
-		if PlannedAttack=="Melee" and Distance<=MeleeRange:
+	if OnCooldown:
+		velocity.x=move_toward(velocity.x,0,Speed)
+		if animated_sprite_2d.animation!="Idle":
+			PlayAnimation.rpc("Idle")
+		return
+	
+	if PlannedAttack=="RetreatAndSpell":
+		if Distance>160 or is_on_wall():
+			PlannedAttack="Spell"
+		else:
+			velocity.x=-Direction*Speed*0.8
+			if animated_sprite_2d.animation!="Run":
+				PlayAnimation.rpc("Run")
+	elif PlannedAttack=="Melee":
+		if Distance<=MeleeRange:
 			OnCooldown=true
 			LastAttack="Melee"
 			TriggerAttack.rpc("Melee")
-			return
-		elif PlannedAttack=="Spell" and Distance<=SpellRange:
+		else:
+			velocity.x=Direction*Speed
+			if animated_sprite_2d.animation!="Run":
+				PlayAnimation.rpc("Run")
+
+	elif PlannedAttack=="Spell":
+		var OptimalSpellDistance=150
+		if Distance<OptimalSpellDistance and not is_on_wall():
+			velocity.x=-Direction*Speed*0.8
+			if animated_sprite_2d.animation!="Run":
+				PlayAnimation.rpc("Run")
+		elif Distance>SpellRange:
+			velocity.x=Direction*Speed
+			if animated_sprite_2d.animation!="Run":
+				PlayAnimation("Run")
+		else:
 			OnCooldown=true
 			LastAttack="Spell"
 			TriggerAttack.rpc("Spell")
-			return
-	velocity.x=Direction*Speed
-	if animated_sprite_2d.animation!="Run":
-		PlayAnimation.rpc("Run")
+
 
 @rpc("authority","call_local")
 func SyncFlipH(IsLeft):
