@@ -356,7 +356,9 @@ script = ExtResource("1_68xo0")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1855646746]
 sprite_frames = SubResource("SpriteFrames_d1jgi")
-animation = &"Spell"
+animation = &"Melee"
+frame = 7
+frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1786264994]
 position = Vector2(0, 16)

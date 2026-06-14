@@ -10,7 +10,7 @@ var OnCooldown=false
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 @onready var DamageAttack1Hitbox: CollisionShape2D = $Attack1Hitbox/CollisionShape2D
 @onready var attack_1_hitbox: Area2D = $Attack1Hitbox
-
+var JumpVelocity=-500
 var CurrentPhase=1
 var LastAttack=''
 var PlannedAttack='Melee'
@@ -62,6 +62,9 @@ func ChasePlayer(delta):
 	var Distance=global_position.distance_to(TargetPlayer.global_position)
 	var Direction=sign(TargetPlayer.global_position.x-global_position.x)
 	var IsLeft=Direction<0
+	var HeightDifference=TargetPlayer.global_position.y-global_position.y
+	var HorizontalDistance=abs(TargetPlayer.global_position.x-global_position.x)
+	
 	if animated_sprite_2d.flip_h!=IsLeft:
 		SyncFlipH.rpc(IsLeft)
 		if  IsLeft:
@@ -70,10 +73,16 @@ func ChasePlayer(delta):
 			attack_1_hitbox.scale.x=1
 	if OnCooldown:
 		velocity.x=move_toward(velocity.x,0,Speed)
-		if animated_sprite_2d.animation!="Idle":
+		if animated_sprite_2d.animation!="Idle" and is_on_floor():
 			PlayAnimation.rpc("Idle")
 		return
-	
+	if is_on_floor():
+		var IsStuck=is_on_wall() and velocity.x!=0
+		var IsPlayerHigher=HeightDifference<-60 and abs(TargetPlayer.global_position.x-global_position.x)<200
+		var RandomJump=randf()<0.015
+		if IsStuck or IsPlayerHigher or RandomJump:
+			velocity.y=JumpVelocity
+			
 	if PlannedAttack=="RetreatAndSpell":
 		if Distance>160 or is_on_wall():
 			PlannedAttack="Spell"
@@ -82,10 +91,12 @@ func ChasePlayer(delta):
 			if animated_sprite_2d.animation!="Run":
 				PlayAnimation.rpc("Run")
 	elif PlannedAttack=="Melee":
-		if Distance<=MeleeRange:
-			OnCooldown=true
-			LastAttack="Melee"
-			TriggerAttack.rpc("Melee")
+		if HorizontalDistance<=MeleeRange:
+			velocity.x=0
+			if is_on_floor():
+				OnCooldown=true
+				LastAttack="Melee"
+				TriggerAttack.rpc("Melee")
 		else:
 			velocity.x=Direction*Speed
 			if animated_sprite_2d.animation!="Run":
@@ -93,11 +104,11 @@ func ChasePlayer(delta):
 
 	elif PlannedAttack=="Spell":
 		var OptimalSpellDistance=150
-		if Distance<OptimalSpellDistance and not is_on_wall():
+		if HorizontalDistance<OptimalSpellDistance and not is_on_wall():
 			velocity.x=-Direction*Speed*0.8
 			if animated_sprite_2d.animation!="Run":
 				PlayAnimation.rpc("Run")
-		elif Distance>SpellRange:
+		elif HorizontalDistance>SpellRange:
 			velocity.x=Direction*Speed
 			if animated_sprite_2d.animation!="Run":
 				PlayAnimation("Run")
@@ -119,14 +130,22 @@ func PlanNextMove():
 	if Health<=250 and CurrentPhase==1:
 		CurrentPhase=2
 		Speed=800
+	if CurrentPhase==2:
+		Speed=randi_range(700,900)
+	else:
+		Speed=randi_range(400,600)
 	if Distance<100:
-		if LastAttack=='Melee' and Random<0.6:
+		if LastAttack=="Melee" and Random<0.6:
 			PlannedAttack="RetreatAndSpell"
+		elif Random>0.85:
+			PlannedAttack="Melee"
 		else:
 			PlannedAttack="Melee"
 	else:
 		if LastAttack=="Spell" and Random<0.7:
 			PlannedAttack="Melee"
+		elif Random>0.95:
+			PlannedAttack="Spell"
 		else:
 			PlannedAttack="Spell"
 	
@@ -138,14 +157,14 @@ func TriggerAttack(Attack):
 		get_tree().create_timer(0.4).timeout.connect(EnableHitbox)
 		get_tree().create_timer(0.6).timeout.connect(DisableHitbox)
 	elif Attack=="Spell":
-		get_tree().create_timer(0.8).timeout.connect(AddSpell)
+		get_tree().create_timer(0.4).timeout.connect(AddSpell)
 
 func EnableHitbox():
 	if not Dead:
-		DamageAttack1Hitbox.disabled=false
+		DamageAttack1Hitbox.set_deferred("disabled",false)
 		
 func DisableHitbox():
-	DamageAttack1Hitbox.disabled=true
+	DamageAttack1Hitbox.set_deferred("disabled",true)
 	
 func AddSpell():
 	if is_multiplayer_authority() and is_instance_valid(TargetPlayer)and not Dead:
