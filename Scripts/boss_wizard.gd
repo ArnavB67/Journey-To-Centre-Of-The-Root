@@ -5,18 +5,20 @@ var CurrentState = State.IDLE
 var TargetPlayer= null
 @export var Health=500
 @export var Dead= false
-var Speed = 500
+var Speed = 300
 var OnCooldown=false
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 @onready var DamageAttack1Hitbox: CollisionShape2D = $Attack1Hitbox/CollisionShape2D
 @onready var attack_1_hitbox: Area2D = $Attack1Hitbox
-var JumpVelocity=-500
+var JumpVelocity=-400
 var CurrentPhase=1
 var LastAttack=''
 var PlannedAttack='Melee'
 var MeleeRange=65
 var SpellRange=250
 const WIZARD_BOSS_SPELL = preload("uid://b0y2pnlu1laws")
+@onready var progress_bar: ProgressBar = $CanvasLayer/ProgressBar
+@onready var health: Label = $CanvasLayer/Health
 
 
 
@@ -36,7 +38,8 @@ func _physics_process(delta: float) -> void:
 			velocity.x=0
 			if is_multiplayer_authority() and animated_sprite_2d.animation!="Idle":
 				PlayAnimation.rpc("Idle")
-		
+			if is_multiplayer_authority():
+				FindTarget()
 		State.CHASE:
 			if is_multiplayer_authority():
 				ChasePlayer(delta)
@@ -47,6 +50,10 @@ func _physics_process(delta: float) -> void:
 		State.DEAD:
 			velocity.x=0
 	move_and_slide()
+
+func _process(delta: float) -> void:
+	progress_bar.value=Health
+	health.text=str(Health)+"/500"
 	
 @rpc("authority","call_local")
 func PlayAnimation(AnimationName):
@@ -55,8 +62,7 @@ func PlayAnimation(AnimationName):
 
 func ChasePlayer(delta):
 	if not is_instance_valid(TargetPlayer) or TargetPlayer.Dead:
-		CurrentState=State.IDLE
-		TargetPlayer=null
+		FindTarget()
 		return
 	
 	var Distance=global_position.distance_to(TargetPlayer.global_position)
@@ -201,9 +207,9 @@ func _on_attack_1_hitbox_body_entered(body: Node2D) -> void:
 	if is_multiplayer_authority():
 		if body.is_in_group("Players"):
 			if CurrentPhase==2:
-				body.GiveDamage.rpc(body.get_path(),35)
+				body.GiveDamage.rpc(body.get_path(),15)
 			else:
-				body.GiveDamage.rpc(body.get_path(),25)
+				body.GiveDamage.rpc(body.get_path(),5)
 
 
 func _on_animated_sprite_2d_animation_finished() -> void:
@@ -212,9 +218,9 @@ func _on_animated_sprite_2d_animation_finished() -> void:
 		if is_multiplayer_authority():
 			var CooldownTime
 			if CurrentPhase==2:
-				CooldownTime=1
+				CooldownTime=0.8
 			else:
-				CooldownTime=2
+				CooldownTime=1
 			get_tree().create_timer(CooldownTime).timeout.connect(ResetCooldown)
 		
 func ResetCooldown():
@@ -233,3 +239,21 @@ func GiveDamage(DamagedBody,DamageAmount):
 		DisableHitbox()
 		PlayAnimation.rpc("Death")
 		get_tree().create_timer(4.0).timeout.connect(queue_free)
+
+func FindTarget():
+	var Players=get_tree().get_nodes_in_group("Players")
+	var ClosestPlayer
+	var ClosestDistance=10000
+	for Player in Players:
+		if not Player.Dead:
+			var Distance=global_position.distance_to(Player.global_position)
+			if Distance<400:
+				if Distance<ClosestDistance:
+					ClosestDistance=Distance
+					ClosestPlayer=Player
+		if ClosestPlayer:
+			SyncTarget.rpc(ClosestPlayer.get_path())
+		else:
+			CurrentState=State.IDLE
+			TargetPlayer=null
+		

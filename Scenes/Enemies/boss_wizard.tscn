@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://b3d2qa8ruqgio" path="res://Assets/EVil Wizard 2/Sprites/Death.png" id="4_tng7y"]
 [ext_resource type="Texture2D" uid="uid://b6xg3a7xduojx" path="res://Assets/EVil Wizard 2/Sprites/Idle.png" id="5_0qqrq"]
 [ext_resource type="Texture2D" uid="uid://dqg1wojbpl5sp" path="res://Assets/EVil Wizard 2/Sprites/Run.png" id="6_0qqg0"]
+[ext_resource type="FontFile" uid="uid://r15t4v2wn6yy" path="res://Assets/fonts/PixelOperator8.ttf" id="8_6ignj"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1cn4o"]
 atlas = ExtResource("3_6ignj")
@@ -348,11 +349,25 @@ properties/0/replication_mode = 1
 size = Vector2(785, 104)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_68xo0"]
-size = Vector2(92, 103)
+size = Vector2(92, 94)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_68xo0"]
+bg_color = Color(0.77841395, 1.92523e-06, 3.85046e-07, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [node name="BossWizard" type="CharacterBody2D" unique_id=1155821232]
-collision_mask = 7
+collision_layer = 8
+collision_mask = 6
 script = ExtResource("1_68xo0")
+metadata/_edit_vertical_guides_ = [-395.0, 396.0]
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1855646746]
 sprite_frames = SubResource("SpriteFrames_d1jgi")
@@ -376,8 +391,64 @@ shape = SubResource("RectangleShape2D_6ignj")
 [node name="Attack1Hitbox" type="Area2D" parent="." unique_id=1218835974]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Attack1Hitbox" unique_id=1145528972]
-position = Vector2(67, -0.5)
+position = Vector2(67, -5)
 shape = SubResource("RectangleShape2D_68xo0")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1923258335]
+
+[node name="ProgressBar" type="ProgressBar" parent="CanvasLayer" unique_id=1002704957]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -250.0
+offset_top = 23.0
+offset_right = 250.0
+offset_bottom = 31.0
+grow_horizontal = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_68xo0")
+max_value = 500.0
+value = 500.0
+show_percentage = false
+
+[node name="Label" type="Label" parent="CanvasLayer" unique_id=161239468]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -39.0
+offset_right = 39.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("8_6ignj")
+text = "MALACOR"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Label2" type="Label" parent="CanvasLayer" unique_id=224246984]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -51.0
+offset_top = 27.0
+offset_right = 51.0
+offset_bottom = 50.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("8_6ignj")
+theme_override_font_sizes/font_size = 8
+text = "The Exiled Magus"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Health" type="Label" parent="CanvasLayer" unique_id=1133897650]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -9.0
+offset_top = 23.0
+offset_right = 53.0
+offset_bottom = 46.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 4
+text = "500/500"
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="body_entered" from="AggroRange" to="." method="_on_aggro_range_body_entered"]
