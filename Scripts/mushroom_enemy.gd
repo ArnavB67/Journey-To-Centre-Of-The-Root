@@ -3,9 +3,9 @@ extends CharacterBody2D
 enum State {IDLE,CHASE,ATTACKING,DEAD}
 var CurrentState = State.IDLE
 var TargetPlayer= null
-@export var Health=500
+@export var Health=50
 @export var Dead= false
-var Speed = 300
+var Speed = 500
 var OnCooldown=false
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 @onready var DamageAttack1Hitbox: CollisionShape2D = $Attack1Hitbox/CollisionShape2D
@@ -14,11 +14,9 @@ var JumpVelocity=-400
 var CurrentPhase=1
 var LastAttack=''
 var PlannedAttack='Melee'
-var MeleeRange=65
-var SpellRange=250
-const WIZARD_BOSS_SPELL = preload("uid://b0y2pnlu1laws")
-@onready var progress_bar: ProgressBar = $CanvasLayer/ProgressBar
-@onready var health: Label = $CanvasLayer/Health
+var MeleeRange=55
+@onready var progress_bar: ProgressBar = $ProgressBar
+
 
 
 
@@ -53,8 +51,8 @@ func _physics_process(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	progress_bar.value=Health
-	health.text=str(Health)+"/500"
-	
+	#health.text=str(Health)+"/500"
+
 @rpc("authority","call_local")
 func PlayAnimation(AnimationName):
 	if animated_sprite_2d.animation!=AnimationName:
@@ -64,10 +62,10 @@ func ChasePlayer(delta):
 	if not is_instance_valid(TargetPlayer) or TargetPlayer.Dead:
 		FindTarget()
 		return
-	
+
 	var Distance=global_position.distance_to(TargetPlayer.global_position)
 	var Direction=sign(TargetPlayer.global_position.x-global_position.x)
-	var IsLeft=Direction<0
+	var IsLeft=Direction>0
 	var HeightDifference=TargetPlayer.global_position.y-global_position.y
 	var HorizontalDistance=abs(TargetPlayer.global_position.x-global_position.x)
 	
@@ -85,18 +83,11 @@ func ChasePlayer(delta):
 	if is_on_floor():
 		var IsStuck=is_on_wall() and velocity.x!=0
 		var IsPlayerHigher=HeightDifference<-60 and abs(TargetPlayer.global_position.x-global_position.x)<200
-		var RandomJump=randf()<0.015
+		var RandomJump=randf()<0.02
 		if IsStuck or IsPlayerHigher or RandomJump:
 			velocity.y=JumpVelocity
 			
-	if PlannedAttack=="RetreatAndSpell":
-		if Distance>160 or is_on_wall():
-			PlannedAttack="Spell"
-		else:
-			velocity.x=-Direction*Speed*0.8
-			if animated_sprite_2d.animation!="Run":
-				PlayAnimation.rpc("Run")
-	elif PlannedAttack=="Melee":
+	if PlannedAttack=="Melee":
 		if HorizontalDistance<=MeleeRange:
 			velocity.x=0
 			if is_on_floor():
@@ -107,21 +98,6 @@ func ChasePlayer(delta):
 			velocity.x=Direction*Speed
 			if animated_sprite_2d.animation!="Run":
 				PlayAnimation.rpc("Run")
-
-	elif PlannedAttack=="Spell":
-		var OptimalSpellDistance=150
-		if HorizontalDistance<OptimalSpellDistance and not is_on_wall():
-			velocity.x=-Direction*Speed*0.8
-			if animated_sprite_2d.animation!="Run":
-				PlayAnimation.rpc("Run")
-		elif HorizontalDistance>SpellRange:
-			velocity.x=Direction*Speed
-			if animated_sprite_2d.animation!="Run":
-				PlayAnimation("Run")
-		else:
-			OnCooldown=true
-			LastAttack="Spell"
-			TriggerAttack.rpc("Spell")
 
 
 @rpc("authority","call_local")
@@ -141,19 +117,9 @@ func PlanNextMove():
 	else:
 		Speed=randi_range(400,600)
 	if Distance<100:
-		if LastAttack=="Melee" and Random<0.6:
-			PlannedAttack="RetreatAndSpell"
-		elif Random>0.85:
-			PlannedAttack="Melee"
-		else:
-			PlannedAttack="Melee"
+		PlannedAttack="Melee"
 	else:
-		if LastAttack=="Spell" and Random<0.7:
-			PlannedAttack="Melee"
-		elif Random>0.95:
-			PlannedAttack="Spell"
-		else:
-			PlannedAttack="Spell"
+		PlannedAttack="Melee"
 	
 @rpc("authority","call_local")
 func TriggerAttack(Attack):
@@ -162,8 +128,6 @@ func TriggerAttack(Attack):
 	if Attack=="Melee":
 		get_tree().create_timer(0.4).timeout.connect(EnableHitbox)
 		get_tree().create_timer(0.6).timeout.connect(DisableHitbox)
-	elif Attack=="Spell":
-		get_tree().create_timer(0.4).timeout.connect(AddSpell)
 
 func EnableHitbox():
 	if not Dead:
@@ -171,23 +135,6 @@ func EnableHitbox():
 		
 func DisableHitbox():
 	DamageAttack1Hitbox.set_deferred("disabled",true)
-	
-func AddSpell():
-	if is_multiplayer_authority() and is_instance_valid(TargetPlayer)and not Dead:
-		var SpellDirection=(TargetPlayer.global_position-global_position).normalized()
-		var SpawnPosition=global_position+Vector2(SpellDirection*30)
-		SpawnSpell.rpc(SpellDirection,SpawnPosition)
-	
-@rpc("authority","call_local")
-func SpawnSpell(SpellDirection,SpawnPosition):
-	var Spell=WIZARD_BOSS_SPELL.instantiate()
-	Spell.top_level=true
-	Spell.global_position=SpawnPosition
-	Spell.Direction=SpellDirection
-	Spell.rotation=SpellDirection.angle()
-	get_tree().current_scene.add_child(Spell)
-
-
 
 func _on_aggro_range_body_entered(body: Node2D) -> void:
 	if is_multiplayer_authority() and CurrentState==State.IDLE:
@@ -207,9 +154,9 @@ func _on_attack_1_hitbox_body_entered(body: Node2D) -> void:
 	if is_multiplayer_authority():
 		if body.is_in_group("Players"):
 			if CurrentPhase==2:
-				body.GiveDamage.rpc(body.get_path(),10)
+				body.GiveDamage.rpc(body.get_path(),20)
 			else:
-				body.GiveDamage.rpc(body.get_path(),5)
+				body.GiveDamage.rpc(body.get_path(),10)
 
 
 func _on_animated_sprite_2d_animation_finished() -> void:
@@ -236,7 +183,6 @@ func GiveDamage(DamagedBody,DamageAmount):
 		Health = 0
 		Dead = true
 		CurrentState = State.DEAD
-		$CanvasLayer.hide()
 		DisableHitbox()
 		PlayAnimation.rpc("Death")
 		get_tree().create_timer(4.0).timeout.connect(queue_free)

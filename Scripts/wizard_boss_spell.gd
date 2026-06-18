@@ -14,5 +14,5 @@ func _process(delta: float) -> void:
 func _on_body_entered(body: Node2D) -> void:
 	if is_multiplayer_authority():
 		if body.is_in_group("Players"):
-			body.GiveDamage.rpc(body.get_path(),15)
+			body.GiveDamage.rpc(body.get_path(),10)
 			queue_free()

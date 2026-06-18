@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b7fbbnbj0p6fo"]
 
-[ext_resource type="PackedScene" uid="uid://bxgsvo5l4d4ub" path="res://Scenes/Enemies/boss_wizard.tscn" id="1_ucf3m"]
+[ext_resource type="PackedScene" uid="uid://dr5ubqx61w6o4" path="res://Scenes/Enemies/mushroom_enemy.tscn" id="2_eobk4"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_qcrco"]
 
@@ -62,5 +62,5 @@ mesh = SubResource("BoxMesh_eobk4")
 position = Vector2(38, 0)
 shape = SubResource("RectangleShape2D_31cnu")
 
-[node name="BossWizard" parent="." unique_id=1155821232 instance=ExtResource("1_ucf3m")]
-position = Vector2(643, 346)
+[node name="MushroomEnemy" parent="." unique_id=1474340046 instance=ExtResource("2_eobk4")]
+position = Vector2(500, 360)
