@@ -73,12 +73,12 @@ func ChasePlayer(delta):
 		SyncFlipH.rpc(IsLeft)
 		if  IsLeft:
 			attack_1_hitbox.scale.x=-1
-			nearby_ground_detector.position.x=-20
-			farther_ground_detector.position.x=-96
+			nearby_ground_detector.position.x=25
+			farther_ground_detector.position.x=96
 		else:
 			attack_1_hitbox.scale.x=1
-			nearby_ground_detector.position.x=20
-			farther_ground_detector.position.x=96
+			nearby_ground_detector.position.x=-25
+			farther_ground_detector.position.x=-96
 			
 	if OnCooldown:
 		velocity.x=move_toward(velocity.x,0,Speed)
@@ -91,23 +91,37 @@ func ChasePlayer(delta):
 		var IsStuck=is_on_wall() and velocity.x!=0
 		var IsPlayerHigher=HeightDifference<-60 and abs(TargetPlayer.global_position.x-global_position.x)<200
 		var RandomJump=randf()<0.02
-		
 		if IsOnEdge:
 			farther_ground_detector.force_shapecast_update()
 			if farther_ground_detector.is_colliding():
+				var Normal=farther_ground_detector.get_collision_normal(0)
+				if Normal.y>-0.5:
+						velocity.x=0
+						CurrentState=State.IDLE
+						PlayAnimation.rpc("Idle")
+						TargetPlayer=null
+						return
+						
 				var CollidingPoint=farther_ground_detector.get_collision_point(0)
 				var DistanceX=abs(CollidingPoint.x-global_position.x)
 				var TimeOfFlight=DistanceX/Speed
-				var DistanceY=CollidingPoint.y-global_position.y
+				var DistanceY=CollidingPoint.y-global_position.y-20
 				var Gravity=get_gravity().y
 				if TimeOfFlight>0.0001:
 					var RequiredUpVelocity=(DistanceY-(0.5*Gravity*TimeOfFlight*TimeOfFlight))/TimeOfFlight
+					
 					if RequiredUpVelocity<JumpVelocity:
 						velocity.x=0
 						CurrentState=State.IDLE
 						PlayAnimation.rpc("Idle")
 						TargetPlayer=null
 						return
+					elif RequiredUpVelocity>0:
+						velocity.y=0
+					else:
+						if RequiredUpVelocity>-250:
+							RequiredUpVelocity=-250
+						velocity.y=RequiredUpVelocity
 				else:
 					velocity.y=JumpVelocity
 			else:
@@ -116,19 +130,20 @@ func ChasePlayer(delta):
 				PlayAnimation.rpc("Idle")
 				TargetPlayer=null
 				return
-					
-		if IsStuck or IsPlayerHigher or RandomJump:
-			velocity.y=JumpVelocity
+		else:			
+			if IsStuck or IsPlayerHigher or RandomJump:
+				velocity.y=JumpVelocity
 			
 	if PlannedAttack=="Melee":
-		if HorizontalDistance<=MeleeRange:
+		if HorizontalDistance<=MeleeRange and is_on_floor():
 			velocity.x=0
 			if is_on_floor():
 				OnCooldown=true
 				LastAttack="Melee"
 				TriggerAttack.rpc("Melee")
 		else:
-			velocity.x=Direction*Speed
+			if TargetPlayer!=null:
+				velocity.x=Direction*Speed
 			if animated_sprite_2d.animation!="Run":
 				PlayAnimation.rpc("Run")
 
@@ -180,8 +195,6 @@ func SyncTarget(PlayerPath):
 	TargetPlayer=get_node_or_null(PlayerPath)
 	if TargetPlayer:
 		CurrentState=State.CHASE
-	
-
 
 func _on_attack_1_hitbox_body_entered(body: Node2D) -> void:
 	if is_multiplayer_authority():
