@@ -1,6 +1,6 @@
 extends Control
 
-const LEVEL1 = preload("uid://b7fbbnbj0p6fo")
+const LEVEL1 = preload("uid://2ytdncg22ydd")
 const WARRIOR = preload("uid://dm6l1a5i5eenu")
 @onready var join_web_rtc: Button = %JoinWebRtc
 @onready var lobby_id_input: LineEdit = $PanelContainer/MarginContainer/HBoxContainer/WebRtc/LobbyIdInput

@@ -435,6 +435,8 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e0s1e"]
+
 [node name="MushroomEnemy" type="CharacterBody2D" unique_id=1474340046]
 collision_layer = 8
 collision_mask = 6
@@ -474,6 +476,18 @@ offset_bottom = -1.0
 theme_override_styles/background = SubResource("StyleBoxFlat_e0s1e")
 theme_override_styles/fill = SubResource("StyleBoxFlat_uvn5o")
 show_percentage = false
+
+[node name="NearbyGroundDetector" type="RayCast2D" parent="." unique_id=705892355]
+position = Vector2(-20, -15)
+target_position = Vector2(0, 53)
+collision_mask = 6
+
+[node name="FartherGroundDetector" type="ShapeCast2D" parent="." unique_id=1568485552]
+position = Vector2(-96.00001, -87)
+scale = Vector2(7.5811977, -2.1833785)
+shape = SubResource("RectangleShape2D_e0s1e")
+target_position = Vector2(9.536743e-07, -101.67729)
+collision_mask = 6
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="body_entered" from="Attack1Hitbox" to="." method="_on_attack_1_hitbox_body_entered"]

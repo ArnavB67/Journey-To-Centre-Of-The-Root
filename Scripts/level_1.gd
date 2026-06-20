@@ -25,3 +25,8 @@ func SpawnEnemies(NoOfEnemies):
 		Enemy.global_position=trap_1_enemy_spawn.global_position
 		get_tree().current_scene.add_child(Enemy)
 		await get_tree().create_timer(0.8).timeout
+
+
+func _on_barrier_1_body_entered(body: Node2D) -> void:
+	if  body.is_in_group("Players"):
+		body.GiveDamage(body.get_path(),100000)
