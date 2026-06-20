@@ -38,8 +38,7 @@ func _physics_process(delta: float) -> void:
 			velocity.x=0
 			if is_multiplayer_authority() and animated_sprite_2d.animation!="Idle":
 				PlayAnimation.rpc("Idle")
-			if is_multiplayer_authority():
-				FindTarget()
+
 		State.CHASE:
 			if is_multiplayer_authority():
 				ChasePlayer(delta)

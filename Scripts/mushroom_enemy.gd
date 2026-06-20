@@ -3,7 +3,7 @@ extends CharacterBody2D
 enum State {IDLE,CHASE,ATTACKING,DEAD}
 var CurrentState = State.IDLE
 var TargetPlayer= null
-@export var Health=50
+@export var Health=100
 @export var Dead= false
 var Speed = 500
 var OnCooldown=false
@@ -36,8 +36,7 @@ func _physics_process(delta: float) -> void:
 			velocity.x=0
 			if is_multiplayer_authority() and animated_sprite_2d.animation!="Idle":
 				PlayAnimation.rpc("Idle")
-			if is_multiplayer_authority():
-				FindTarget()
+
 		State.CHASE:
 			if is_multiplayer_authority():
 				ChasePlayer(delta)
