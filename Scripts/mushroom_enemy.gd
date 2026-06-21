@@ -10,7 +10,7 @@ var OnCooldown=false
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 @onready var DamageAttack1Hitbox: CollisionShape2D = $Attack1Hitbox/CollisionShape2D
 @onready var attack_1_hitbox: Area2D = $Attack1Hitbox
-var JumpVelocity=-400
+var JumpVelocity=-350
 var CurrentPhase=1
 var LastAttack=''
 var PlannedAttack='Melee'
@@ -18,7 +18,7 @@ var MeleeRange=55
 @onready var progress_bar: ProgressBar = $ProgressBar
 @onready var nearby_ground_detector: RayCast2D = $NearbyGroundDetector
 @onready var farther_ground_detector: ShapeCast2D = $FartherGroundDetector
-
+var LastTargetGroundY=0
 
 
 func _ready() -> void:
@@ -51,7 +51,6 @@ func _physics_process(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	progress_bar.value=Health
-	#health.text=str(Health)+"/500"
 
 @rpc("authority","call_local")
 func PlayAnimation(AnimationName):
@@ -62,80 +61,80 @@ func ChasePlayer(delta):
 	if not is_instance_valid(TargetPlayer) or TargetPlayer.Dead:
 		FindTarget()
 		return
-
+	if TargetPlayer.is_on_floor():
+		LastTargetGroundY=TargetPlayer.global_position.y
+	elif LastTargetGroundY==0:
+		LastTargetGroundY=TargetPlayer.global_position.y
+		
 	var Distance=global_position.distance_to(TargetPlayer.global_position)
 	var Direction=sign(TargetPlayer.global_position.x-global_position.x)
 	var IsLeft=Direction>0
-	var HeightDifference=TargetPlayer.global_position.y-global_position.y
+	var HeightDifference=LastTargetGroundY-global_position.y
 	var HorizontalDistance=abs(TargetPlayer.global_position.x-global_position.x)
 	
 	if animated_sprite_2d.flip_h!=IsLeft:
 		SyncFlipH.rpc(IsLeft)
-		if  IsLeft:
-			attack_1_hitbox.scale.x=-1
-			nearby_ground_detector.position.x=25
-			farther_ground_detector.position.x=96
-		else:
-			attack_1_hitbox.scale.x=1
-			nearby_ground_detector.position.x=-25
-			farther_ground_detector.position.x=-96
+	if  IsLeft:
+		attack_1_hitbox.scale.x=-1
+		nearby_ground_detector.position.x=25
+		farther_ground_detector.position.x=96
+	else:
+		attack_1_hitbox.scale.x=1
+		nearby_ground_detector.position.x=-25
+		farther_ground_detector.position.x=-96
 			
 	if OnCooldown:
 		velocity.x=move_toward(velocity.x,0,Speed)
 		if animated_sprite_2d.animation!="Idle" and is_on_floor():
 			PlayAnimation.rpc("Idle")
 		return
+	
+	var IsOnEdge=false
+	
 	if is_on_floor():
 		nearby_ground_detector.force_raycast_update()
-		var IsOnEdge= not nearby_ground_detector.is_colliding()
+		IsOnEdge= not nearby_ground_detector.is_colliding()
 		var IsStuck=is_on_wall() and velocity.x!=0
-		var IsPlayerHigher=HeightDifference<-60 and abs(TargetPlayer.global_position.x-global_position.x)<200
-		var RandomJump=randf()<0.02
+		var IsPlayerHigher=HeightDifference<-60 and abs(TargetPlayer.global_position.x-global_position.x)<30
+		var RandomJump=randf()<0.001
 		if IsOnEdge:
 			farther_ground_detector.force_shapecast_update()
 			if farther_ground_detector.is_colliding():
 				var Normal=farther_ground_detector.get_collision_normal(0)
 				if Normal.y>-0.5:
 						velocity.x=0
-						CurrentState=State.IDLE
 						PlayAnimation.rpc("Idle")
-						TargetPlayer=null
 						return
 						
 				var CollidingPoint=farther_ground_detector.get_collision_point(0)
 				var DistanceX=abs(CollidingPoint.x-global_position.x)
-				var TimeOfFlight=DistanceX/Speed
 				var DistanceY=CollidingPoint.y-global_position.y-20
 				var Gravity=get_gravity().y
-				if TimeOfFlight>0.0001:
-					var RequiredUpVelocity=(DistanceY-(0.5*Gravity*TimeOfFlight*TimeOfFlight))/TimeOfFlight
-					
-					if RequiredUpVelocity<JumpVelocity:
-						velocity.x=0
-						CurrentState=State.IDLE
-						PlayAnimation.rpc("Idle")
-						TargetPlayer=null
-						return
-					elif RequiredUpVelocity>0:
-						velocity.y=0
+				var Discriminant=JumpVelocity*JumpVelocity+2*Gravity*DistanceY
+				if Discriminant>=0:
+					var TimeOfFlight= (-JumpVelocity+sqrt(Discriminant))/(Gravity)
+					if TimeOfFlight>0.0001:
+						velocity.y=JumpVelocity
+						velocity.x=(DistanceX/TimeOfFlight)*Direction
 					else:
-						if RequiredUpVelocity>-250:
-							RequiredUpVelocity=-250
-						velocity.y=RequiredUpVelocity
+						velocity.x=0
+						PlayAnimation.rpc("Idle")
+						return
 				else:
-					velocity.y=JumpVelocity
+					var TimeOfFlight=0.6
+					velocity.y=(DistanceY-(0.5*Gravity*TimeOfFlight*TimeOfFlight))/TimeOfFlight
+					velocity.x=(DistanceX/TimeOfFlight)*Direction
 			else:
 				velocity.x=0
-				CurrentState=State.IDLE
 				PlayAnimation.rpc("Idle")
-				TargetPlayer=null
 				return
-		else:			
-			if IsStuck or IsPlayerHigher or RandomJump:
+		else:
+			var IsBlockedByPlayer=HorizontalDistance<=MeleeRange+20
+			if (IsStuck and not IsBlockedByPlayer) or IsPlayerHigher or RandomJump:
 				velocity.y=JumpVelocity
 			
 	if PlannedAttack=="Melee":
-		if HorizontalDistance<=MeleeRange and is_on_floor():
+		if HorizontalDistance<=MeleeRange and is_on_floor() and not IsOnEdge:
 			velocity.x=0
 			if is_on_floor():
 				OnCooldown=true
@@ -143,7 +142,8 @@ func ChasePlayer(delta):
 				TriggerAttack.rpc("Melee")
 		else:
 			if TargetPlayer!=null:
-				velocity.x=Direction*Speed
+				if is_on_floor() and not IsOnEdge:
+					velocity.x=Direction*Speed
 			if animated_sprite_2d.animation!="Run":
 				PlayAnimation.rpc("Run")
 
@@ -161,9 +161,9 @@ func PlanNextMove():
 		CurrentPhase=2
 		Speed=100
 	if CurrentPhase==2:
-		Speed=randi_range(Speed,Speed+50)
+		Speed=randi_range(200,250)
 	else:
-		Speed=randi_range(Speed,Speed+20)
+		Speed=randi_range(200,220)
 	if Distance<100:
 		PlannedAttack="Melee"
 	else:
