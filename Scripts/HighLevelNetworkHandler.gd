@@ -105,7 +105,7 @@ func _exit_tree() -> void:
 		Tubeclient.leave_session()
 
 @rpc("any_peer","call_local")
-func ChangeCharacter(PeerId,NewCharacter):
+func ChangeCharacter(PeerId,NewCharacter,Health):
 	var CharacterToChange=get_tree().current_scene.get_node_or_null(str(PeerId))
 	var SpawnPosition
 	if CharacterToChange:
@@ -113,9 +113,9 @@ func ChangeCharacter(PeerId,NewCharacter):
 		CharacterToChange.name="Replacing"+str(PeerId)
 		CharacterToChange.queue_free()
 	await get_tree().create_timer(0.05).timeout
-	SpawnReplaced(PeerId,NewCharacter,SpawnPosition)
+	SpawnReplaced(PeerId,NewCharacter,SpawnPosition,Health)
 
-func SpawnReplaced(PeerId,NewCharacter,SpawnPosition):
+func SpawnReplaced(PeerId,NewCharacter,SpawnPosition,Health):
 	var NewPlayer
 	if NewCharacter=="Warrior":
 		NewPlayer=WARRIOR.instantiate()
@@ -125,5 +125,6 @@ func SpawnReplaced(PeerId,NewCharacter,SpawnPosition):
 		NewPlayer=ARCHER.instantiate()
 	if NewPlayer:
 		NewPlayer.name=str(PeerId)
+		NewPlayer.Health=Health
 		NewPlayer.position=SpawnPosition
 		get_tree().current_scene.add_child(NewPlayer,true)

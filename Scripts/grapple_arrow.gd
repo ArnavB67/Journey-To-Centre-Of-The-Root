@@ -24,6 +24,7 @@ func _on_body_entered(body: Node2D) -> void:
 	
 func CreateRope():
 	var Rope=StaticBody2D.new()
+	Rope.add_to_group("GrappleRope")
 	Rope.collision_layer=2
 	var CollisionShape=CollisionShape2D.new()
 	var Segment=SegmentShape2D.new()

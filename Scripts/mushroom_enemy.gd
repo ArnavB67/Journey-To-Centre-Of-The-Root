@@ -14,7 +14,7 @@ var JumpVelocity=-350
 var CurrentPhase=1
 var LastAttack=''
 var PlannedAttack='Melee'
-var MeleeRange=55
+var MeleeRange=45
 @onready var progress_bar: ProgressBar = $ProgressBar
 @onready var nearby_ground_detector: RayCast2D = $NearbyGroundDetector
 @onready var farther_ground_detector: ShapeCast2D = $FartherGroundDetector
@@ -129,7 +129,7 @@ func ChasePlayer(delta):
 				PlayAnimation.rpc("Idle")
 				return
 		else:
-			var IsBlockedByPlayer=HorizontalDistance<=MeleeRange+20
+			var IsBlockedByPlayer=HorizontalDistance<=MeleeRange
 			if (IsStuck and not IsBlockedByPlayer) or IsPlayerHigher or RandomJump:
 				velocity.y=JumpVelocity
 			

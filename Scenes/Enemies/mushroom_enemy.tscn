@@ -411,7 +411,7 @@ animations = [{
 size = Vector2(30, 31)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_atv6k"]
-size = Vector2(22, 31)
+size = Vector2(26, 31)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_66vlp"]
 size = Vector2(142, 42)
@@ -455,7 +455,7 @@ shape = SubResource("RectangleShape2D_elecw")
 collision_layer = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Attack1Hitbox" unique_id=591824638]
-position = Vector2(-27, 16.5)
+position = Vector2(-29, 16.5)
 shape = SubResource("RectangleShape2D_atv6k")
 
 [node name="AggroRange" type="Area2D" parent="." unique_id=1137226148]

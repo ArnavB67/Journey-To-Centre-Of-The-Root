@@ -41,6 +41,8 @@ func _ready() -> void:
 			$Username.text=Global.Username
 		camera_2d.make_current()
 		lobby_id.text="Lobby Code: "+HighLevelNetworkHandler.Tubeclient.session_id
+		Input.set_custom_mouse_cursor(preload("res://Assets/crosshair.png"),Input.CURSOR_ARROW,Vector2(16,16))
+
 
 func _process(delta: float) -> void:
 	if is_multiplayer_authority():
@@ -99,9 +101,18 @@ func PlayAttackAnimation(AnimationName):
 
 func _physics_process(delta: float) -> void:
 	if not Dead:
+		var IsOnRope=false
 		if is_on_floor():
-			var RealRotation=get_floor_normal().angle()+(PI/2)
+				for CollisionNo in get_slide_collision_count():
+					var CollidedWith=get_slide_collision(CollisionNo).get_collider()
+					if CollidedWith and CollidedWith.is_in_group("GrappleRope"):
+						IsOnRope=true
+						break
+		if IsOnRope:
+			var RealRotation= get_floor_normal().angle()+(PI/2)
 			rotation=lerp_angle(rotation,RealRotation,15*delta)
+		else:
+			rotation=lerp_angle(rotation,0,15*delta)
 	if not Attacking and not Dead:
 			if not is_on_floor():
 				velocity += get_gravity() * delta
@@ -201,12 +212,12 @@ func ChangeSpectator():
 func _on_warrior_pressed() -> void:
 	if is_multiplayer_authority():
 		Global.MyCharacter="Warrior"
-		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Warrior")
+		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Warrior",Health)
 		
 func _on_button_pressed() -> void:
 	if is_multiplayer_authority():
 		Global.MyCharacter="Wizard"
-		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Wizard")
+		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Wizard",Health)
 
 
 func _on_attack_2_hitbox_body_entered(body: Node2D) -> void:
@@ -218,4 +229,4 @@ func _on_attack_2_hitbox_body_entered(body: Node2D) -> void:
 func _on_archer_pressed() -> void:
 	if is_multiplayer_authority():
 		Global.MyCharacter="Archer"
-		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Archer")
+		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Archer",Health)

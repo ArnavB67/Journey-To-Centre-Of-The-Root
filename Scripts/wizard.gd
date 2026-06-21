@@ -2,8 +2,8 @@ extends CharacterBody2D
 
 @export var Dead=false
 @export var Health=100
-var SPEED = 150.0
-var JUMP_VELOCITY = -250.0
+var SPEED = 200.0
+var JUMP_VELOCITY = -250
 var Attack1Cooldown=10
 var Attack2Cooldown=3
 @onready var camera_2d: Camera2D = %Camera2D
@@ -40,7 +40,7 @@ func _ready() -> void:
 			$Username.text=Global.Username
 		camera_2d.make_current()
 		lobby_id.text="Lobby Code: "+HighLevelNetworkHandler.Tubeclient.session_id
-		Input.set_custom_mouse_cursor(preload("res://Assets/crosshair.png"))
+		Input.set_custom_mouse_cursor(preload("res://Assets/crosshair.png"),Input.CURSOR_ARROW,Vector2(16,16))
 		
 func _process(delta: float) -> void:
 	if is_multiplayer_authority():
@@ -117,13 +117,22 @@ func PlayAttackAnimation(AnimationName):
 
 func _physics_process(delta: float) -> void:
 	if not Dead:
+		var IsOnRope=false
 		if is_on_floor():
+				for CollisionNo in get_slide_collision_count():
+					var CollidedWith=get_slide_collision(CollisionNo).get_collider()
+					if CollidedWith and CollidedWith.is_in_group("GrappleRope"):
+						IsOnRope=true
+						break
+		if IsOnRope:
 			var RealRotation= get_floor_normal().angle()+(PI/2)
 			rotation=lerp_angle(rotation,RealRotation,15*delta)
-	
+		else:
+			rotation=lerp_angle(rotation,0,15*delta)
+			
 	if not Attacking and not Dead:
 			if not is_on_floor():
-				velocity += get_gravity() * delta
+				velocity += get_gravity() * delta 
 
 			if Input.is_action_just_pressed(&"jump") and is_on_floor():
 				velocity.y = JUMP_VELOCITY
@@ -204,12 +213,12 @@ func ChangeSpectator():
 func _on_warrior_pressed() -> void:
 	if is_multiplayer_authority():
 		Global.MyCharacter="Warrior"
-		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Warrior")
+		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Warrior",Health)
 		
 func _on_button_pressed() -> void:
 	if is_multiplayer_authority():
 		Global.MyCharacter="Wizard"
-		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Wizard")
+		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Wizard",Health)
 
 @rpc("any_peer","call_local")
 func Attack1():
@@ -245,4 +254,9 @@ func Attack2(AimDirection):
 func _on_archer_pressed() -> void:
 	if is_multiplayer_authority():
 		Global.MyCharacter="Archer"
-		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Archer")
+		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Archer",Health)
+
+
+func _on_regen_timer_timeout() -> void:
+	if not Dead and Health<100:
+		Health=min(Health+randi_range(1,3),100)

@@ -548,6 +548,10 @@ one_shot = true
 unique_name_in_owner = true
 position = Vector2(43, -13)
 
+[node name="RegenTimer" type="Timer" parent="." unique_id=1213547668]
+wait_time = 5.0
+autostart = true
+
 [connection signal="timeout" from="AttackAnimationTimer" to="." method="_on_attack_animation_timer_timeout"]
 [connection signal="pressed" from="CanvasLayer/Menu/PanelContainer/MarginContainer/VBoxContainer/LeaveButton" to="." method="_on_leave_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/SelectMenu/Panel/HBoxContainer/Warrior" to="." method="_on_warrior_pressed"]
@@ -555,3 +559,4 @@ position = Vector2(43, -13)
 [connection signal="pressed" from="CanvasLayer/SelectMenu/Panel/HBoxContainer/Archer" to="." method="_on_archer_pressed"]
 [connection signal="timeout" from="DeathAnimationTimer" to="." method="_on_death_animation_timer_timeout"]
 [connection signal="timeout" from="Attack1Duration" to="." method="_on_attack_1_duration_timeout"]
+[connection signal="timeout" from="RegenTimer" to="." method="_on_regen_timer_timeout"]
