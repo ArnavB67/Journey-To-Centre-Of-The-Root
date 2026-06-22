@@ -148,6 +148,7 @@ func _physics_process(delta: float) -> void:
 				if direction!=0:
 					animated_sprite_2d.flip_h=direction<0
 					attack_spawn_point.position.x = -43 if direction < 0 else 43
+					$CollisionShape2D.position.x = 4 if direction < 0 else -4
 					if animated_sprite_2d.animation!="Run":
 						PlayAttackAnimation.rpc(&"Run")
 				if direction==0:

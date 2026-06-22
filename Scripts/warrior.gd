@@ -137,9 +137,11 @@ func _physics_process(delta: float) -> void:
 					if direction<0:
 						attack_1_hitbox.scale.x=-1
 						attack_2_hitbox.scale.x=-1
+						$CollisionShape2D.position.x=-6
 					else:
 						attack_1_hitbox.scale.x=1
 						attack_2_hitbox.scale.x=1
+						$CollisionShape2D.position.x=6
 				if direction==0:
 					if animated_sprite_2d.animation!="Idle":
 						PlayAttackAnimation.rpc(&"Idle")

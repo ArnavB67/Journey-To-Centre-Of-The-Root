@@ -198,7 +198,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"Attack1",
-"speed": 30.0
+"speed": 20.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -227,7 +227,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"Attack2",
-"speed": 30.0
+"speed": 20.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -276,7 +276,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"Idle",
-"speed": 30.0
+"speed": 20.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -287,7 +287,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"Jump",
-"speed": 30.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
