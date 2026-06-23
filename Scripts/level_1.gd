@@ -10,6 +10,8 @@ var IsLaserOn=false
 var LaserCurrentLenght=0
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	if not is_multiplayer_authority():
+		$LaserTimer.stop()
 	for Laser in Lasers:
 		var LaserArea=Laser.get_node("Area2D")
 		LaserArea.body_entered.connect(OnLaserEntered)
@@ -38,6 +40,12 @@ func _on_barrier_1_body_entered(body: Node2D) -> void:
 
 
 func _on_laser_timer_timeout() -> void:
+	if is_multiplayer_authority():
+		var RandomSpeeds=[randf_range(0.2,0.8),randf_range(0.2,0.8),randf_range(0.2,0.8)]
+		LasersAction.rpc(RandomSpeeds)
+
+@rpc("authority","call_local")
+func LasersAction(RandomSpeeds):
 	IsLaserOn=!IsLaserOn
 	if IsLaserOn:
 		LaserCurrentLenght=LaserOnLength
@@ -45,12 +53,14 @@ func _on_laser_timer_timeout() -> void:
 		LaserCurrentLenght=LaserOffLength
 	var LaserTween=create_tween().set_parallel(true)
 	for LaserNo in range(Lasers.size()):
-		LaserTween.tween_property(Lasers[LaserNo],"scale:y",LaserCurrentLenght,randf_range(0.2,0.8))
+		LaserTween.tween_property(Lasers[LaserNo],"scale:y",LaserCurrentLenght,RandomSpeeds[LaserNo])
 
 func OnLaserEntered(body):
-	if body.is_in_group("Players"):
-		body.GiveDamage(body.get_path(),15)
-		
+	if is_multiplayer_authority():
+		if body.is_in_group("Players"):
+			body.GiveDamage(body.get_path(),15)
+
+
 	
 
 	

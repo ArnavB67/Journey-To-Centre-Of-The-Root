@@ -109,6 +109,9 @@ func _process(delta: float) -> void:
 				AimDirection.x=abs(AimDirection.x)
 			AimDirection=AimDirection.normalized()
 			Attack2.rpc(AimDirection)
+		
+		if Input.is_action_just_pressed(&"Special") and Health<=25 and not Dead:
+			SacrificeRevive()
 
 @rpc("authority","call_local","reliable")
 func PlayAttackAnimation(AnimationName):
@@ -261,3 +264,25 @@ func _on_archer_pressed() -> void:
 func _on_regen_timer_timeout() -> void:
 	if not Dead and Health<100:
 		Health=min(Health+randi_range(1,3),100)
+
+@rpc("any_peer","call_local")
+func RevivePlayer():
+	Dead=false
+	Health=100
+	visible=true
+	death_animation_timer.stop()
+	PlayAttackAnimation("Idle")
+	if is_multiplayer_authority():
+		camera_2d.make_current()
+
+func SacrificeRevive():
+	var Players = get_tree().get_nodes_in_group("Players")
+	var ReviveTarget=null
+	for Player in Players:
+		if Player.Dead and Player!=self:
+			ReviveTarget=Player
+			break
+		if ReviveTarget:
+			ReviveTarget.RevivePlayer.rpc()
+			GiveDamage.rpc(get_path(),Health)
+	

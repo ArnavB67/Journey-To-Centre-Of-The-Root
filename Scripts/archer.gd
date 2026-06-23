@@ -3,7 +3,7 @@ extends CharacterBody2D
 @export var Dead=false
 @export var Health=100
 var SPEED = 250.0
-var JUMP_VELOCITY = -350.0
+var JUMP_VELOCITY = -450.0
 var Attack1Cooldown=1.5
 var Attack2Cooldown=5
 @onready var camera_2d: Camera2D = %Camera2D
@@ -246,3 +246,14 @@ func _on_archer_pressed() -> void:
 	if is_multiplayer_authority():
 		Global.MyCharacter="Archer"
 		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Archer",Health)
+
+
+@rpc("any_peer","call_local")
+func RevivePlayer():
+	Dead=false
+	Health=100
+	visible=true
+	death_animation_timer.stop()
+	PlayAttackAnimation("Idle")
+	if is_multiplayer_authority():
+		camera_2d.make_current()

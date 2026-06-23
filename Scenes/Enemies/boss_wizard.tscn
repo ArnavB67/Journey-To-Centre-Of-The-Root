@@ -395,6 +395,7 @@ position = Vector2(67, -5)
 shape = SubResource("RectangleShape2D_68xo0")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1923258335]
+visible = false
 
 [node name="ProgressBar" type="ProgressBar" parent="CanvasLayer" unique_id=1002704957]
 anchors_preset = 5

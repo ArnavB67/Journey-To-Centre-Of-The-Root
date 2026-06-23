@@ -25,6 +25,10 @@ var CurrentCooldownAttack1=0
 var CurrentCooldownAttack2=0
 var Attack1Cooldown=1
 var Attack2Cooldown=5
+var IsSpecialAbilityActive=false
+var SpecialAbilityTarget=null
+var DiedFromExplosion = false
+
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
 
@@ -72,9 +76,10 @@ func _process(delta: float) -> void:
 				CurrentPhysicsProcess=!CurrentPhysicsProcess
 				set_physics_process(CurrentPhysicsProcess)
 				if select_menu.visible:
-					PlayAttackAnimation("Idle")
+					PlayAttackAnimation.rpc("Idle")
 		if Dead==true:
-			PlayAttackAnimation.rpc("Death")
+			if not DiedFromExplosion:
+				PlayAttackAnimation.rpc("Death")
 			if Input.is_action_just_pressed(&"ChangeSpectator"):
 				ChangeSpectator()
 			return
@@ -93,13 +98,36 @@ func _process(delta: float) -> void:
 			attack_2_collision_shape.disabled=false
 			PlayAttackAnimation.rpc(&"Attack2")
 			attack_animation_timer.start()
-
+		if Input.is_action_just_pressed(&"Special") and not IsSpecialAbilityActive and Health<=25:
+			var Enemies = get_tree().get_nodes_in_group("Enemies")
+			var NearestEnemyDistance=1000000
+			for Enemy in Enemies:
+				var Distance = global_position.distance_to(Enemy.global_position)
+				if Distance < NearestEnemyDistance:
+					NearestEnemyDistance= Distance
+					SpecialAbilityTarget=Enemy
+				if SpecialAbilityTarget:
+					IsSpecialAbilityActive = true
+					PlayAttackAnimation.rpc("Run")
 @rpc("authority","call_local","reliable")
 func PlayAttackAnimation(AnimationName):
 	animated_sprite_2d.play(AnimationName)
 	
 
 func _physics_process(delta: float) -> void:
+	if IsSpecialAbilityActive:
+		if not is_instance_valid(SpecialAbilityTarget):
+			Explode()
+			return
+		var Direction= (SpecialAbilityTarget.global_position-global_position).normalized()
+		velocity=Direction*SPEED*2
+		var IsLeft= velocity.x<0
+		animated_sprite_2d.flip_h=IsLeft
+		move_and_slide()
+		if global_position.distance_to(SpecialAbilityTarget.global_position)<=50:
+			Explode()
+		return
+				
 	if not Dead:
 		var IsOnRope=false
 		if is_on_floor():
@@ -178,6 +206,10 @@ func GiveDamage(DamagedPlayer,DamageAmount):
 
 	if PlayerToDamage:
 		var NextHealth=PlayerToDamage.Health-DamageAmount
+		if NextHealth<=0 and PlayerToDamage.IsSpecialAbilityActive:
+			PlayerToDamage.Health=1
+			return
+		
 		if NextHealth<=0:
 			PlayerToDamage.Health=0
 			PlayerToDamage.Dead=true
@@ -225,10 +257,41 @@ func _on_button_pressed() -> void:
 func _on_attack_2_hitbox_body_entered(body: Node2D) -> void:
 	if is_multiplayer_authority():
 		if body.is_in_group("Enemies"):
-			body.GiveDamage.rpc(body.get_path(),20)
+			body.GiveDamage.rpc(body.get_path(),25)
 
 
 func _on_archer_pressed() -> void:
 	if is_multiplayer_authority():
 		Global.MyCharacter="Archer"
 		HighLevelNetworkHandler.ChangeCharacter.rpc(multiplayer.get_unique_id(),"Archer",Health)
+
+
+@rpc("any_peer","call_local")
+func RevivePlayer():
+	Dead=false
+	DiedFromExplosion = false
+	Health=100
+	visible=true
+	animated_sprite_2d.visible=true
+	death_animation_timer.stop()
+	PlayAttackAnimation("Idle")
+	if is_multiplayer_authority():
+		camera_2d.make_current()
+
+func Explode():
+	var ExplosionRadius = 120
+	var Enemies= get_tree().get_nodes_in_group("Enemies")
+	for Enemy in Enemies:
+		if global_position.distance_to(Enemy.global_position)<=ExplosionRadius:
+			Enemy.GiveDamage.rpc(Enemy.get_path(),80)
+	ExplosionVisuals.rpc()
+
+@rpc("any_peer","call_local")
+func ExplosionVisuals():
+	IsSpecialAbilityActive=false
+	Health=0
+	Dead=true
+	animated_sprite_2d.visible=false
+	$ExplosionParticles.emitting=true
+	death_animation_timer.start()
+	

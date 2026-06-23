@@ -3,14 +3,14 @@ extends CharacterBody2D
 enum State {IDLE,CHASE,ATTACKING,DEAD}
 var CurrentState = State.IDLE
 var TargetPlayer= null
-@export var Health=500
+@export var Health=300
 @export var Dead= false
 var Speed = 300
 var OnCooldown=false
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 @onready var DamageAttack1Hitbox: CollisionShape2D = $Attack1Hitbox/CollisionShape2D
 @onready var attack_1_hitbox: Area2D = $Attack1Hitbox
-var JumpVelocity=-400
+var JumpVelocity=-500
 var CurrentPhase=1
 var LastAttack=''
 var PlannedAttack='Melee'
@@ -191,6 +191,7 @@ func SpawnSpell(SpellDirection,SpawnPosition):
 func _on_aggro_range_body_entered(body: Node2D) -> void:
 	if is_multiplayer_authority() and CurrentState==State.IDLE:
 		if body.is_in_group("Players") and not body.Dead:
+			$CanvasLayer.visible=true
 			SyncTarget.rpc(body.get_path())
 			PlanNextMove()
 
