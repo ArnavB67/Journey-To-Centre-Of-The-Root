@@ -282,7 +282,7 @@ func SacrificeRevive():
 		if Player.Dead and Player!=self:
 			ReviveTarget=Player
 			break
-		if ReviveTarget:
-			ReviveTarget.RevivePlayer.rpc()
-			GiveDamage.rpc(get_path(),Health)
+	if ReviveTarget:
+		ReviveTarget.RevivePlayer.rpc()
+		GiveDamage.rpc(get_path(),Health)
 	

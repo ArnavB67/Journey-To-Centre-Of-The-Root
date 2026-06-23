@@ -19,7 +19,7 @@ var MeleeRange=45
 @onready var nearby_ground_detector: RayCast2D = $NearbyGroundDetector
 @onready var farther_ground_detector: ShapeCast2D = $FartherGroundDetector
 var LastTargetGroundY=0
-
+var Poisoned = false
 
 func _ready() -> void:
 	add_to_group("Enemies")

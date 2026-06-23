@@ -22,6 +22,8 @@ var CurrentPhysicsProcess=true
 const ARROW = preload("uid://cxi2neiheg8xg")
 const GRAPPLE_ARROW = preload("uid://d0uswe3hxap8o")
 @onready var attack_spawn_point: Node2D = %AttackSpawnPoint
+const POISON_ARROW = preload("uid://crvfd0v2nfcyc")
+
 var CurrentCooldownAttack1=0
 var CurrentCooldownAttack2=0
 
@@ -110,7 +112,21 @@ func _process(delta: float) -> void:
 			
 			var AimDirection=(get_global_mouse_position()-attack_spawn_point.global_position).normalized()
 			Attack2.rpc(AimDirection)
-
+		
+		if Input.is_action_just_pressed(&"Special") and Health<=25:
+			Attacking=true
+			PlayAttackAnimation.rpc(&"ShootArrow")
+			attack_animation_timer.start()
+			var IsAimingLeft=get_global_mouse_position().x<global_position.x
+			animated_sprite_2d.flip_h=IsAimingLeft
+			if IsAimingLeft:
+				attack_spawn_point.position.x=-43
+			else:
+				attack_spawn_point.position.x=43
+			var AimDirection=(get_global_mouse_position()-attack_spawn_point.global_position).normalized()
+			PoisonArrow.rpc(AimDirection)
+			
+			
 @rpc("authority","call_local","reliable")
 func PlayAttackAnimation(AnimationName):
 	animated_sprite_2d.play(AnimationName)
@@ -240,7 +256,14 @@ func Attack2(AimDirection):
 	GrappleArrow.rotation=AimDirection.angle()
 	get_tree().current_scene.add_child(GrappleArrow)
 	
-
+@rpc("any_peer","call_local")
+func PoisonArrow(AimDirection):
+	var PoisonArrow=POISON_ARROW.instantiate()
+	PoisonArrow.top_level=true
+	PoisonArrow.global_position=attack_spawn_point.global_position
+	PoisonArrow.AttackDirection=AimDirection
+	PoisonArrow.rotation=AimDirection.angle()
+	get_tree().current_scene.add_child(PoisonArrow)
 
 func _on_archer_pressed() -> void:
 	if is_multiplayer_authority():

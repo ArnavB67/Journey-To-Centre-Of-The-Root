@@ -346,7 +346,7 @@ properties/0/spawn = true
 properties/0/replication_mode = 1
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6ignj"]
-size = Vector2(785, 104)
+size = Vector2(785, 383)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_68xo0"]
 size = Vector2(92, 94)
@@ -363,6 +363,9 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="Gradient" id="Gradient_6ignj"]
+colors = PackedColorArray(0, 1, 0, 1, 4.2114408e-07, 0.24777898, 0.15157709, 1)
+
 [node name="BossWizard" type="CharacterBody2D" unique_id=1155821232]
 collision_layer = 8
 collision_mask = 6
@@ -371,9 +374,7 @@ metadata/_edit_vertical_guides_ = [-395.0, 396.0]
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1855646746]
 sprite_frames = SubResource("SpriteFrames_d1jgi")
-animation = &"Melee"
-frame = 7
-frame_progress = 1.0
+animation = &"Idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1786264994]
 position = Vector2(0, 16)
@@ -386,6 +387,7 @@ replication_config = SubResource("SceneReplicationConfig_68xo0")
 collision_layer = 16
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AggroRange" unique_id=1651472678]
+position = Vector2(0, -139.5)
 shape = SubResource("RectangleShape2D_6ignj")
 
 [node name="Attack1Hitbox" type="Area2D" parent="." unique_id=1218835974]
@@ -407,8 +409,8 @@ offset_right = 250.0
 offset_bottom = 31.0
 grow_horizontal = 2
 theme_override_styles/fill = SubResource("StyleBoxFlat_68xo0")
-max_value = 500.0
-value = 500.0
+max_value = 400.0
+value = 400.0
 show_percentage = false
 
 [node name="Label" type="Label" parent="CanvasLayer" unique_id=161239468]
@@ -451,6 +453,24 @@ grow_horizontal = 2
 theme_override_font_sizes/font_size = 4
 text = "500/500"
 
+[node name="PoisonedParticleEffect" type="CPUParticles2D" parent="." unique_id=2093278115]
+position = Vector2(-2, 23)
+emitting = false
+amount = 10
+lifetime = 1.5
+randomness = 0.5
+emission_shape = 3
+emission_rect_extents = Vector2(10, 20)
+gravity = Vector2(0, -50)
+initial_velocity_max = 10.0
+angular_velocity_max = 100.0
+scale_amount_max = 1.5
+color_ramp = SubResource("Gradient_6ignj")
+
+[node name="PoisonTimer" type="Timer" parent="." unique_id=1873960285]
+wait_time = 2.0
+
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="body_entered" from="AggroRange" to="." method="_on_aggro_range_body_entered"]
 [connection signal="body_entered" from="Attack1Hitbox" to="." method="_on_attack_1_hitbox_body_entered"]
+[connection signal="timeout" from="PoisonTimer" to="." method="_on_poison_timer_timeout"]

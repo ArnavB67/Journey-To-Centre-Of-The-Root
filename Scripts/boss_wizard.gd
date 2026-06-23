@@ -3,7 +3,7 @@ extends CharacterBody2D
 enum State {IDLE,CHASE,ATTACKING,DEAD}
 var CurrentState = State.IDLE
 var TargetPlayer= null
-@export var Health=300
+@export var Health=400
 @export var Dead= false
 var Speed = 300
 var OnCooldown=false
@@ -19,13 +19,16 @@ var SpellRange=250
 const WIZARD_BOSS_SPELL = preload("uid://b0y2pnlu1laws")
 @onready var progress_bar: ProgressBar = $CanvasLayer/ProgressBar
 @onready var health: Label = $CanvasLayer/Health
-
-
+var Poisoned = false
+var PoisonTimerStarted = false
 
 func _ready() -> void:
 	add_to_group("Enemies")
 	DisableHitbox()
-
+	if not is_multiplayer_authority():
+		set_physics_process(false)
+	
+	
 func _enter_tree() -> void:
 	set_multiplayer_authority(1)
 
@@ -51,6 +54,9 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func _process(delta: float) -> void:
+	if Poisoned==true and not PoisonTimerStarted:
+		PoisonTimerStarted=true
+		$PoisonTimer.start()
 	progress_bar.value=Health
 	health.text=str(Health)+"/500"
 	
@@ -69,6 +75,9 @@ func ChasePlayer(delta):
 	var IsLeft=Direction<0
 	var HeightDifference=TargetPlayer.global_position.y-global_position.y
 	var HorizontalDistance=abs(TargetPlayer.global_position.x-global_position.x)
+	
+	if Direction==0:
+		Direction=1
 	
 	if animated_sprite_2d.flip_h!=IsLeft:
 		SyncFlipH.rpc(IsLeft)
@@ -116,7 +125,7 @@ func ChasePlayer(delta):
 		elif HorizontalDistance>SpellRange:
 			velocity.x=Direction*Speed
 			if animated_sprite_2d.animation!="Run":
-				PlayAnimation("Run")
+				PlayAnimation.rpc("Run")
 		else:
 			OnCooldown=true
 			LastAttack="Spell"
@@ -191,7 +200,6 @@ func SpawnSpell(SpellDirection,SpawnPosition):
 func _on_aggro_range_body_entered(body: Node2D) -> void:
 	if is_multiplayer_authority() and CurrentState==State.IDLE:
 		if body.is_in_group("Players") and not body.Dead:
-			$CanvasLayer.visible=true
 			SyncTarget.rpc(body.get_path())
 			PlanNextMove()
 
@@ -200,6 +208,7 @@ func SyncTarget(PlayerPath):
 	TargetPlayer=get_node_or_null(PlayerPath)
 	if TargetPlayer:
 		CurrentState=State.CHASE
+		$CanvasLayer.visible=true
 	
 
 
@@ -248,7 +257,7 @@ func FindTarget():
 	for Player in Players:
 		if not Player.Dead:
 			var Distance=global_position.distance_to(Player.global_position)
-			if Distance<400:
+			if Distance<2000:
 				if Distance<ClosestDistance:
 					ClosestDistance=Distance
 					ClosestPlayer=Player
@@ -258,3 +267,7 @@ func FindTarget():
 			CurrentState=State.IDLE
 			TargetPlayer=null
 		
+
+
+func _on_poison_timer_timeout() -> void:
+	GiveDamage.rpc(get_path(),5)

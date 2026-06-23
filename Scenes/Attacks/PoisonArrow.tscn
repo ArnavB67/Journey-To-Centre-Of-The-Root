@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://crvfd0v2nfcyc"]
+
+[ext_resource type="Script" uid="uid://cls7u14ct3oev" path="res://Scripts/poison_arrow.gd" id="1_t8tra"]
+[ext_resource type="Texture2D" uid="uid://d100aoblwnt28" path="res://Assets/PoisonArrow.png" id="2_t8tra"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qvpfc"]
+size = Vector2(21, 2)
+
+[node name="PoisonArrow" type="Area2D" unique_id=1402290069]
+collision_layer = 16
+collision_mask = 10
+script = ExtResource("1_t8tra")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1744875659]
+texture = ExtResource("2_t8tra")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1378053381]
+position = Vector2(0.5, 0)
+shape = SubResource("RectangleShape2D_qvpfc")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
