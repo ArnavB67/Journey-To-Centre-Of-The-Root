@@ -20,15 +20,21 @@ var MeleeRange=45
 @onready var farther_ground_detector: ShapeCast2D = $FartherGroundDetector
 var LastTargetGroundY=0
 var Poisoned = false
+@export var SyncPosition = Vector2.ZERO
 
 func _ready() -> void:
 	add_to_group("Enemies")
+	SyncPosition= global_position
 	DisableHitbox()
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(1)
 
 func _physics_process(delta: float) -> void:
+	if not is_multiplayer_authority():
+		global_position=global_position.lerp(SyncPosition,15*delta)
+		return
+		
 	if not is_on_floor():
 		velocity+=get_gravity()*delta
 		
@@ -48,6 +54,7 @@ func _physics_process(delta: float) -> void:
 		State.DEAD:
 			velocity.x=0
 	move_and_slide()
+	SyncPosition= global_position
 
 func _process(delta: float) -> void:
 	progress_bar.value=Health
@@ -127,6 +134,8 @@ func ChasePlayer(delta):
 			else:
 				velocity.x=0
 				PlayAnimation.rpc("Idle")
+				TargetPlayer=null
+				CurrentState=State.IDLE
 				return
 		else:
 			var IsBlockedByPlayer=HorizontalDistance<=MeleeRange
@@ -244,9 +253,9 @@ func FindTarget():
 				if Distance<ClosestDistance:
 					ClosestDistance=Distance
 					ClosestPlayer=Player
-		if ClosestPlayer:
-			SyncTarget.rpc(ClosestPlayer.get_path())
-		else:
-			CurrentState=State.IDLE
-			TargetPlayer=null
+	if ClosestPlayer:
+		SyncTarget.rpc(ClosestPlayer.get_path())
+	else:
+		CurrentState=State.IDLE
+		TargetPlayer=null
 		

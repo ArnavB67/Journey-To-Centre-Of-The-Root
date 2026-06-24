@@ -341,7 +341,7 @@ radius = 19.0
 height = 52.0
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_68xo0"]
-properties/0/path = NodePath(".:position")
+properties/0/path = NodePath(".:SyncPosition")
 properties/0/spawn = true
 properties/0/replication_mode = 1
 
@@ -464,7 +464,7 @@ emission_rect_extents = Vector2(10, 20)
 gravity = Vector2(0, -50)
 initial_velocity_max = 10.0
 angular_velocity_max = 100.0
-scale_amount_max = 1.5
+scale_amount_max = 2.5
 color_ramp = SubResource("Gradient_6ignj")
 
 [node name="PoisonTimer" type="Timer" parent="." unique_id=1873960285]

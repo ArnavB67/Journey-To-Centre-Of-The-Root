@@ -21,18 +21,22 @@ const WIZARD_BOSS_SPELL = preload("uid://b0y2pnlu1laws")
 @onready var health: Label = $CanvasLayer/Health
 var Poisoned = false
 var PoisonTimerStarted = false
+@export var SyncPosition = Vector2.ZERO
 
 func _ready() -> void:
 	add_to_group("Enemies")
 	DisableHitbox()
-	if not is_multiplayer_authority():
-		set_physics_process(false)
+	SyncPosition = global_position
 	
 	
 func _enter_tree() -> void:
 	set_multiplayer_authority(1)
 
 func _physics_process(delta: float) -> void:
+	if not is_multiplayer_authority():
+		global_position = global_position.lerp(SyncPosition,15*delta)
+		return
+		
 	if not is_on_floor():
 		velocity+=get_gravity()*delta
 		
@@ -52,14 +56,21 @@ func _physics_process(delta: float) -> void:
 		State.DEAD:
 			velocity.x=0
 	move_and_slide()
+	SyncPosition = global_position
 
 func _process(delta: float) -> void:
 	if Poisoned==true and not PoisonTimerStarted:
 		PoisonTimerStarted=true
 		$PoisonTimer.start()
+		ShowParticles.rpc()
+		
 	progress_bar.value=Health
 	health.text=str(Health)+"/500"
-	
+
+@rpc("authority","call_local")
+func ShowParticles():
+	$PoisonedParticleEffect.emitting=true
+
 @rpc("authority","call_local")
 func PlayAnimation(AnimationName):
 	if animated_sprite_2d.animation!=AnimationName:
@@ -261,11 +272,11 @@ func FindTarget():
 				if Distance<ClosestDistance:
 					ClosestDistance=Distance
 					ClosestPlayer=Player
-		if ClosestPlayer:
-			SyncTarget.rpc(ClosestPlayer.get_path())
-		else:
-			CurrentState=State.IDLE
-			TargetPlayer=null
+	if ClosestPlayer:
+		SyncTarget.rpc(ClosestPlayer.get_path())
+	else:
+		CurrentState=State.IDLE
+		TargetPlayer=null
 		
 
 

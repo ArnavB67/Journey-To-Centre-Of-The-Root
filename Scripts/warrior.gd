@@ -28,6 +28,8 @@ var Attack2Cooldown=5
 var IsSpecialAbilityActive=false
 var SpecialAbilityTarget=null
 var DiedFromExplosion = false
+@export var SyncPosition = Vector2.ZERO
+@export var SyncRotation = 0
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
@@ -36,9 +38,8 @@ func _ready() -> void:
 	floor_max_angle=deg_to_rad(85)
 	floor_snap_length=16
 	add_to_group('Players')
+	SyncPosition = global_position
 	if not is_multiplayer_authority():
-		set_process(false)
-		set_physics_process(false)
 		$CanvasLayer.visible=false
 	if is_multiplayer_authority():
 		if Global.Username:
@@ -78,7 +79,7 @@ func _process(delta: float) -> void:
 				if select_menu.visible:
 					PlayAttackAnimation.rpc("Idle")
 		if Dead==true:
-			if not DiedFromExplosion:
+			if not DiedFromExplosion and animated_sprite_2d.animation!="Death":
 				PlayAttackAnimation.rpc("Death")
 			if Input.is_action_just_pressed(&"ChangeSpectator"):
 				ChangeSpectator()
@@ -115,6 +116,11 @@ func PlayAttackAnimation(AnimationName):
 	
 
 func _physics_process(delta: float) -> void:
+	if not is_multiplayer_authority():
+		global_position=global_position.lerp(SyncPosition,15*delta)
+		rotation = lerp_angle(rotation,SyncRotation,15*delta)
+		return
+	
 	if IsSpecialAbilityActive:
 		if not is_instance_valid(SpecialAbilityTarget):
 			Explode()
@@ -181,6 +187,8 @@ func _physics_process(delta: float) -> void:
 				velocity.x = move_toward(velocity.x, 0, SPEED)
 
 			move_and_slide()
+			SyncPosition = global_position
+			SyncRotation= rotation
 
 
 func _on_attack_animation_timer_timeout() -> void:
@@ -240,6 +248,7 @@ func ChangeSpectator():
 		CurrentSpectating=(CurrentSpectating+1)%AlivePlayers.size()
 		var SpectatePlayer=AlivePlayers[CurrentSpectating]
 		SpectatePlayer.camera_2d.make_current()
+		SpectatePlayer.camera_2d.reset_smoothing()
 		
 
 
