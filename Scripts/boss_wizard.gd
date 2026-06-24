@@ -45,9 +45,12 @@ func _physics_process(delta: float) -> void:
 			velocity.x=0
 			if is_multiplayer_authority() and animated_sprite_2d.animation!="Idle":
 				PlayAnimation.rpc("Idle")
+			if is_multiplayer_authority():
+				FindTarget()
 
 		State.CHASE:
 			if is_multiplayer_authority():
+				FindTarget()
 				ChasePlayer(delta)
 		
 		State.ATTACKING:
@@ -78,7 +81,6 @@ func PlayAnimation(AnimationName):
 
 func ChasePlayer(delta):
 	if not is_instance_valid(TargetPlayer) or TargetPlayer.Dead:
-		FindTarget()
 		return
 	
 	var Distance=global_position.distance_to(TargetPlayer.global_position)
@@ -273,7 +275,9 @@ func FindTarget():
 					ClosestDistance=Distance
 					ClosestPlayer=Player
 	if ClosestPlayer:
-		SyncTarget.rpc(ClosestPlayer.get_path())
+		if TargetPlayer!= ClosestPlayer:
+			SyncTarget.rpc(ClosestPlayer.get_path())
+			PlanNextMove()
 	else:
 		CurrentState=State.IDLE
 		TargetPlayer=null
