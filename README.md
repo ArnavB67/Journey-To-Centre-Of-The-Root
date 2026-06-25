@@ -28,7 +28,11 @@ The Game Has 2 Types of Enemies :
 
 The Controls are :
 1)A,D for left and right movement
+
 2)Space Bar For Jump
+
 3)C for Primary Attack
+
 4)X for Secondary Attack
+
 5)Q for Low Health Attack
