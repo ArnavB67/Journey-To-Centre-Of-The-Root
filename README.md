@@ -60,7 +60,15 @@ The Controls are :
 
 5)Q for Low Health Attack
 
+AI Usage:
+Ai was used for debugging help, Multiplayer help in unknown concepts and learning new concepts
 
+Credits:
+https://luizmelo.itch.io/ 
+for Character Sprites 
+
+https://atomicrealm.itch.io/
+for Map Assets
 
 PREVIEW GAMEPLAY
 
