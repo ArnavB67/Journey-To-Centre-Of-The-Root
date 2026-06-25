@@ -2,6 +2,7 @@ Journey To Centre Of Root
 
 This is a multiplayer action platformer game based on webrtc peer to peer connection. I used Tubes addon to support multiplayer sessions and hence players can connect via web rtc without need of an external server.
 
+No Web Build Since Multiplayer Didnt Work on Web, Hence Please Download the exe to run the game, while running dont run the console, just the normal exe
 
 Players Spawn Near a computer and they can choose between 3 characters to Play by interacting with the computer by pressing the key 'E' when they get near it.
 
